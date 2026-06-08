@@ -105,8 +105,19 @@ This project addresses that challenge by providing an interactive AI-powered env
 cse4104-7c-t02-ai-prompt-engineering-learning-hub/
 │
 ├── backend/
+│
 ├── documentation/
+│   ├── CSE4104-7C-T02_Week01.pdf
+│   ├── CSE4104-7C-T02_TeamInfo.pdf
+│   ├── CSE4104-7C-T02_Proposal.pdf
+│   ├── CSE4104-7C-T02_SRS.pdf
+│   ├── CSE4104-7C-T02_ERDiagram.pdf
+│   ├── CSE4104-7C-T02_UseCaseDiagram.pdf
+│   ├── CSE4104-7C-T02_SystemArchitectureDiagram.pdf
+│   └── CSE4104-7C-T02_WorkflowDiagram.pdf
+│
 ├── frontend/
+│
 ├── .gitignore
 └── README.md
 ```
