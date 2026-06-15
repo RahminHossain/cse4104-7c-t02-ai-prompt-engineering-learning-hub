@@ -30,7 +30,7 @@ The platform provides users with opportunities to learn prompt engineering conce
 
 ## Problem Statement
 
-Many users struggle to create effective prompts for AI systems and often rely on trial-and-error methods. Existing resources such as blogs, tutorials, and videos provide theoretical knowledge but lack real-time evaluation and hands-on practice.
+Many users struggle to create effective prompts for AI systems and often rely on trial-and-error methods. Existing learning resources such as blogs, tutorials, and videos provide theoretical knowledge but lack hands-on practice and real-time evaluation.
 
 This project addresses that challenge by providing an interactive AI-powered environment where users can learn, test, evaluate, and optimize prompts with intelligent feedback.
 
@@ -56,8 +56,10 @@ This project addresses that challenge by providing an interactive AI-powered env
 * Prompt Playground
 * AI Prompt Critic and Optimizer
 * Prompt Engineering Tutorials
-* Prompt Template Library
+* Prompt Marketplace
 * Reverse Prompt Engineering Challenges
+* Progress Tracking System
+* XP, Badge, and Reward System
 
 ### AI Features
 
@@ -82,6 +84,7 @@ This project addresses that challenge by providing an interactive AI-powered env
 * Node.js
 * Express.js
 * JWT Authentication
+* Google OAuth
 
 ### Database
 
@@ -104,28 +107,53 @@ This project addresses that challenge by providing an interactive AI-powered env
 ```text
 cse4104-7c-t02-ai-prompt-engineering-learning-hub/
 │
+├── frontend/
+│   └── Frontend source code
+│
 ├── backend/
+│   └── Backend source code and API services
+│
+├── database/
+│   └── Database-related resources and future schema files
+│
+├── diagrams/
+│   ├── ER Diagram
+│   ├── Use Case Diagram
+│   ├── Activity Diagram
+│   ├── System Architecture Diagram
+│   └── Workflow Diagram
 │
 ├── documentation/
-│   ├── CSE4104-7C-T02_Week01.pdf
-│   ├── CSE4104-7C-T02_TeamInfo.pdf
-│   ├── CSE4104-7C-T02_Proposal.pdf
-│   ├── CSE4104-7C-T02_SRS.pdf
-│   ├── CSE4104-7C-T02_ERDiagram.pdf
-│   ├── CSE4104-7C-T02_UseCaseDiagram.pdf
-│   ├── CSE4104-7C-T02_SystemArchitectureDiagram.pdf
-│   └── CSE4104-7C-T02_WorkflowDiagram.pdf
+│   ├── Week 01 Documentation
+│   ├── Project Proposal
+│   ├── Software Requirements Specification (SRS)
+│   ├── System Design Document
+│   └── Team Information Sheet
 │
-├── frontend/
-│
-├── .gitignore
-└── README.md
+├── README.md
+└── .gitignore
 ```
 
 ---
 
 ## Repository Purpose
 
-This repository contains the source code, documentation, diagrams, and project resources for the AI Prompt Engineering Learning Hub.
+This repository contains the source code, project documentation, system design artifacts, and development resources for the AI Prompt Engineering Learning Hub.
 
-The project is being developed as part of the CSE4104 Software Development III course and follows a structured software development lifecycle including requirement analysis, system design, implementation, testing, and deployment.
+The project is being developed as part of the **CSE4104 – Software Development III** course at **Northern University of Business and Technology, Khulna (NUBTK)** and follows a structured software development lifecycle including:
+
+* Requirement Analysis
+* System Design
+* Implementation
+* Testing
+* Deployment
+
+---
+
+## Current Project Status
+
+* Week 01 Documentation Completed
+* Project Proposal Completed
+* Software Requirements Specification (SRS) Completed
+* System Design & Architecture Completed
+* Development Phase Starting
