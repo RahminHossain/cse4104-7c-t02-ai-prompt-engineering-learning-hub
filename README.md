@@ -24,19 +24,19 @@ An AI-powered educational platform designed to help users learn, practice, and i
 
 The AI Prompt Engineering Learning Hub is a web-based educational platform focused on teaching modern prompt engineering techniques for Large Language Models (LLMs) such as ChatGPT, Gemini, and Claude.
 
-The platform provides users with opportunities to learn prompt engineering concepts, experiment with prompts, receive AI-generated feedback, and improve prompt quality through practical learning activities.
+The platform enables users to learn prompt engineering concepts, experiment with prompts, receive AI-generated feedback, and improve prompt quality through practical learning activities.
 
 ---
 
 ## Problem Statement
 
-Many users struggle to create effective prompts for AI systems and often rely on trial-and-error methods. Existing learning resources such as blogs, tutorials, and videos provide theoretical knowledge but lack hands-on practice and real-time evaluation.
+Many users struggle to create effective prompts for AI systems and often rely on trial-and-error methods. Existing resources such as blogs, tutorials, and videos provide theoretical knowledge but lack real-time evaluation and hands-on practice.
 
 This project addresses that challenge by providing an interactive AI-powered environment where users can learn, test, evaluate, and optimize prompts with intelligent feedback.
 
 ---
 
-## Objectives
+## Project Objectives
 
 * Develop an interactive prompt engineering learning platform.
 * Provide AI-powered prompt evaluation and optimization.
@@ -47,19 +47,18 @@ This project addresses that challenge by providing an interactive AI-powered env
 
 ---
 
-## Features
+## Core Features
 
-### Core Features
+### User Features
 
 * User Authentication System
 * Interactive User Dashboard
+* User Profile Management
+* Learning Modules
 * Prompt Playground
-* AI Prompt Critic and Optimizer
-* Prompt Engineering Tutorials
-* Prompt Marketplace
+* Prompt Template Library
 * Reverse Prompt Engineering Challenges
-* Progress Tracking System
-* XP, Badge, and Reward System
+* Prompt Marketplace
 
 ### AI Features
 
@@ -69,9 +68,16 @@ This project addresses that challenge by providing an interactive AI-powered env
 * Semantic Feedback Generation
 * Dynamic Prompt Improvement Recommendations
 
+### Administrative Features
+
+* User Management
+* Learning Module Management
+* Marketplace Content Management
+* Platform Analytics Dashboard
+
 ---
 
-## Technology Stack
+## Final Technology Stack
 
 ### Frontend
 
@@ -88,17 +94,23 @@ This project addresses that challenge by providing an interactive AI-powered env
 
 ### Database
 
-* MongoDB / PostgreSQL
+* MongoDB
 
-### AI Integration
+### AI Services
 
 * Google Gemini API
-* OpenAI API
+
+### Development Tools
+
+* Git
+* GitHub
+* Figma
+* Draw.io
 
 ### Deployment
 
-* Vercel
-* Render / Railway
+* Vercel (Frontend)
+* Render (Backend)
 
 ---
 
@@ -108,52 +120,82 @@ This project addresses that challenge by providing an interactive AI-powered env
 cse4104-7c-t02-ai-prompt-engineering-learning-hub/
 │
 ├── frontend/
-│   └── Frontend source code
-│
 ├── backend/
-│   └── Backend source code and API services
-│
 ├── database/
-│   └── Database-related resources and future schema files
-│
+├── design/
 ├── diagrams/
-│   ├── ER Diagram
-│   ├── Use Case Diagram
-│   ├── Activity Diagram
-│   ├── System Architecture Diagram
-│   └── Workflow Diagram
-│
 ├── documentation/
-│   ├── Week 01 Documentation
-│   ├── Project Proposal
-│   ├── Software Requirements Specification (SRS)
-│   ├── System Design Document
-│   └── Team Information Sheet
-│
-├── README.md
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
+
+---
+
+## Project Documentation
+
+### Available Documents
+
+* Project Proposal
+* Team Information Sheet
+* Software Requirements Specification (SRS)
+* System Design Document
+* UI/UX Design Document
+
+### Available Diagrams
+
+* System Architecture Diagram
+* ER Diagram
+* Use Case Diagram
+* Activity Diagram
+* Workflow Diagram
+* User Flow Diagram
+
+---
+
+## Project Setup Instructions
+
+### Prerequisites
+
+* Node.js
+* npm
+* MongoDB
+* Git
+
+### Installation Steps
+
+1. Clone the repository.
+2. Navigate to the project directory.
+3. Install frontend dependencies.
+4. Install backend dependencies.
+5. Configure environment variables.
+6. Start the frontend and backend servers.
+7. Access the application through a web browser.
+
+---
+
+## Development Status
+
+### Completed
+
+* Week 01: Team Formation and Idea Selection
+* Week 02: Project Proposal
+* Week 03: Software Requirements Specification (SRS)
+* Week 04: System Design and Architecture
+* Week 05: UI/UX Design and Development Planning
+
+### Upcoming
+
+* Backend Development
+* Frontend Development
+* AI Integration
+* Testing and Debugging
+* Deployment
 
 ---
 
 ## Repository Purpose
 
-This repository contains the source code, project documentation, system design artifacts, and development resources for the AI Prompt Engineering Learning Hub.
+This repository contains the source code, design assets, documentation, diagrams, and project resources for the AI Prompt Engineering Learning Hub.
 
-The project is being developed as part of the **CSE4104 – Software Development III** course at **Northern University of Business and Technology, Khulna (NUBTK)** and follows a structured software development lifecycle including:
+The project is being developed as part of the CSE4104 Software Development III course and follows a structured software development lifecycle including requirement analysis, system design, UI/UX planning, implementation, testing, and deployment.
 
-* Requirement Analysis
-* System Design
-* Implementation
-* Testing
-* Deployment
-
----
-
-## Current Project Status
-
-* Week 01 Documentation Completed
-* Project Proposal Completed
-* Software Requirements Specification (SRS) Completed
-* System Design & Architecture Completed
-* Development Phase Starting
