@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "CSE4104-7C-T02 Backend APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "resourceId",
+      "value": ""
+    },
+    {
+      "key": "challengeId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Student One\",\n  \"email\": \"student1@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"student\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@teem01.com\",\n  \"password\": \"AdminPass123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "User - Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "******"
+          }
+        ],
+        "url": "{{baseUrl}}/users/profile"
+      }
+    },
+    {
+      "name": "User - Update Profile",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "******"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/users/profile",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Student\",\n  \"bio\": \"Improving prompt engineering skills\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Resources - List",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/resources"
+      }
+    },
+    {
+      "name": "Resources - Create (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "******"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/resources",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Few-shot Prompting\",\n  \"description\": \"Hands-on examples for few-shot prompts\",\n  \"level\": \"intermediate\",\n  \"category\": \"Techniques\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Challenges - List",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/challenges"
+      }
+    },
+    {
+      "name": "Challenges - Create (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "******"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/challenges",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Role Prompt Optimization\",\n  \"promptTask\": \"Improve a role-based prompt for customer support use-case\",\n  \"expectedOutcome\": \"Structured prompt with role, constraints, and output format\",\n  \"difficulty\": \"medium\"\n}"
+        }
+      }
+    }
+  ]
+}
