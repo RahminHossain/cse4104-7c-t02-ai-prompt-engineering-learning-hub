@@ -45,6 +45,20 @@ backend/
    npm run dev
    ```
 
+## Deploy on Render (with MongoDB Atlas)
+
+1. Create a MongoDB Atlas cluster and copy your connection string.
+2. Create a Render **Web Service** from this repository's `backend` directory.
+3. Use:
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+4. Add environment variables in Render:
+   - `MONGODB_URI` (or `MONGO_URI`) = Atlas connection string
+   - `JWT_SECRET` = your JWT secret
+   - `JWT_EXPIRES_IN` = token expiry (optional, defaults to `7d`)
+   - `PORT` = optional (Render injects this automatically)
+5. Deploy, then test API routes using the Render service URL.
+
 ## API Endpoints
 
 ### Authentication
