@@ -1,11 +1,12 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { getProfile, updateProfile } = require('../controllers/userController');
-const { authenticate } = require('../middleware/authMiddleware');
+const { getProfile, updateProfile, getAllUsers, deleteUser } = require('../controllers/userController');
+const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
 
 const router = express.Router();
 
+// Current User Profile
 router.get('/profile', authenticate, getProfile);
 router.put(
   '/profile',
@@ -17,5 +18,9 @@ router.put(
   validateRequest,
   updateProfile
 );
+
+// Admin Routes
+router.get('/', authenticate, authorizeRoles('admin'), getAllUsers);
+router.delete('/:id', authenticate, authorizeRoles('admin'), deleteUser);
 
 module.exports = router;
