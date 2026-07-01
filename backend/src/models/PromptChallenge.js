@@ -32,6 +32,22 @@ const promptChallengeSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    time: {
+      type: String, // e.g., "15 min"
+      default: "15 min",
+    },
+    attempts: {
+      type: Number,
+      default: 0,
+    },
+    successRate: {
+      type: String, // e.g., "68%"
+      default: "0%",
+    },
+    xp: {
+      type: Number, // e.g., 150
+      default: 100,
+    }
   },
   { timestamps: true }
 );
