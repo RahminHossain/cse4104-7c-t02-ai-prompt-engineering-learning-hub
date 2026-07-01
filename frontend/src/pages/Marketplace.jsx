@@ -1,59 +1,34 @@
+import { useState, useEffect } from 'react';
 import { Search, Copy, Download, Heart } from 'lucide-react';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 const Marketplace = () => {
-  const prompts = [
-    {
-      id: 1,
-      title: "Code Review Expert",
-      author: "Alice Chen",
-      category: "Development",
-      desc: "Comprehensive code review prompt with best practices and security checks",
-      tags: ["code", "review", "security"],
-      likes: 245,
-      downloads: 1250,
-      price: "Free"
-    },
-    {
-      id: 2,
-      title: "Data Analysis Template",
-      author: "Bob Smith",
-      category: "Analytics",
-      desc: "Structured prompt for analyzing datasets and generating insights",
-      tags: ["data", "analysis", "insights"],
-      likes: 189,
-      downloads: 890,
-      price: "Free"
-    },
-    {
-      id: 3,
-      title: "Technical Documentation Writer",
-      author: "Carol Davis",
-      category: "Writing",
-      desc: "Create clear, comprehensive technical documentation",
-      tags: ["docs", "writing", "technical"],
-      likes: 156,
-      downloads: 670,
-      price: "Free"
-    },
-    {
-      id: 4,
-      title: "API Design Assistant",
-      author: "David Lee",
-      category: "Development",
-      desc: "RESTful API design with best practices and OpenAPI specs",
-      tags: ["api", "design", "rest"],
-      likes: 134,
-      downloads: 540,
-      price: "Free"
-    }
-  ];
+  const [prompts, setPrompts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPrompts = async () => {
+      try {
+        const { data } = await api.get('/marketplace');
+        // Only show approved prompts to regular users
+        const approvedPrompts = data.prompts.filter(p => p.status === 'Approved');
+        setPrompts(approvedPrompts);
+      } catch (error) {
+        toast.error('Failed to load marketplace items');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPrompts();
+  }, []);
 
   const categories = [
-    { name: "All", count: 245, active: true },
-    { name: "< > Development", count: 89 },
-    { name: "📊 Analytics", count: 45 },
-    { name: "✍️ Writing", count: 67 },
-    { name: "📈 Marketing", count: 34 }
+    { name: "All", count: prompts.length, active: true },
+    { name: "< > Development", count: prompts.filter(p => p.category === 'Development').length },
+    { name: "📊 Analytics", count: prompts.filter(p => p.category === 'Analytics').length },
+    { name: "✍️ Writing", count: prompts.filter(p => p.category === 'Writing').length },
+    { name: "📈 Marketing", count: prompts.filter(p => p.category === 'Marketing').length }
   ];
 
   return (
@@ -129,52 +104,58 @@ const Marketplace = () => {
           </div>
 
           <div className="space-y-4">
-            {prompts.map((prompt) => (
-              <div key={prompt.id} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-gray-900">{prompt.title}</h3>
-                    <span className="px-2.5 py-0.5 bg-dark text-white text-xs rounded-md">
-                      {prompt.category}
-                    </span>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-600 mb-4">{prompt.desc}</p>
-                <p className="text-xs text-gray-500 mb-4">by {prompt.author}</p>
-                
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {prompt.tags.map(tag => (
-                    <span key={tag} className="px-2 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-xs rounded">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
-                      <Heart className="w-4 h-4" /> {prompt.likes}
-                    </button>
-                    <span className="flex items-center gap-1">
-                      <Download className="w-4 h-4" /> {prompt.downloads}
-                    </span>
-                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium text-xs rounded border border-emerald-100">
-                      {prompt.price}
-                    </span>
+            {loading ? (
+              <p className="text-gray-500 py-4 text-center">Loading prompts...</p>
+            ) : prompts.length === 0 ? (
+              <p className="text-gray-500 py-4 text-center">No prompts found in the marketplace.</p>
+            ) : (
+              prompts.map((prompt) => (
+                <div key={prompt._id} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-gray-900">{prompt.title}</h3>
+                      <span className="px-2.5 py-0.5 bg-dark text-white text-xs rounded-md">
+                        {prompt.category}
+                      </span>
+                    </div>
                   </div>
                   
-                  <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                      <Copy className="w-4 h-4" /> Copy
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                      <Download className="w-4 h-4" /> Export
-                    </button>
+                  <p className="text-sm text-gray-600 mb-4">{prompt.desc}</p>
+                  <p className="text-xs text-gray-500 mb-4">by {prompt.authorName}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {prompt.tags.map(tag => (
+                      <span key={tag} className="px-2 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-xs rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
+                        <Heart className="w-4 h-4" /> {prompt.likes || 0}
+                      </button>
+                      <span className="flex items-center gap-1">
+                        <Download className="w-4 h-4" /> {prompt.downloads || 0}
+                      </span>
+                      <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 font-medium text-xs rounded border border-emerald-100">
+                        {prompt.price || 'Free'}
+                      </span>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        <Copy className="w-4 h-4" /> Copy
+                      </button>
+                      <button className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                        <Download className="w-4 h-4" /> Export
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
