@@ -1,16 +1,33 @@
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Zap, BookOpen, Award, Trophy, PlayCircle, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 
 const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data based on the wireframe (Fig 4)
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await api.get('/users/profile');
+        setProfileData(data.user);
+      } catch (error) {
+        console.error('Failed to load profile data', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const stats = [
-    { label: 'Total XP', value: '2,450', icon: <Zap className="text-warning w-6 h-6" />, bgColor: 'bg-yellow-50' },
-    { label: 'Modules Completed', value: '8/12', icon: <BookOpen className="text-blue-500 w-6 h-6" />, bgColor: 'bg-blue-50' },
-    { label: 'Badges Earned', value: '5', icon: <Award className="text-purple-500 w-6 h-6" />, bgColor: 'bg-purple-50' },
-    { label: 'Challenges Won', value: '12', icon: <Trophy className="text-emerald-500 w-6 h-6" />, bgColor: 'bg-emerald-50' },
+    { label: 'Total XP', value: profileData?.xp || '0', icon: <Zap className="text-warning w-6 h-6" />, bgColor: 'bg-yellow-50' },
+    { label: 'Modules Completed', value: profileData?.completedModules?.length || '0', icon: <BookOpen className="text-blue-500 w-6 h-6" />, bgColor: 'bg-blue-50' },
+    { label: 'Badges Earned', value: profileData?.badges?.length || '0', icon: <Award className="text-purple-500 w-6 h-6" />, bgColor: 'bg-purple-50' },
+    { label: 'Challenges Won', value: '0', icon: <Trophy className="text-emerald-500 w-6 h-6" />, bgColor: 'bg-emerald-50' }, // Assuming challenge tracking comes later
   ];
 
   return (
@@ -22,103 +39,113 @@ const Dashboard = () => {
         <p className="text-gray-600 mt-1">Track your learning progress and continue your prompt engineering journey</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-              <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
-            </div>
-            <div className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
-              {stat.icon}
-            </div>
+      {loading ? (
+        <div className="text-center py-8">Loading dashboard...</div>
+      ) : (
+        <>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {stats.map((stat, idx) => (
+              <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">{stat.label}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                </div>
+                <div className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
+                  {stat.icon}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content Area */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* Learning Progress */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">Learning Progress</h2>
-                <p className="text-sm text-gray-500">Continue where you left off</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content Area */}
+            <div className="lg:col-span-2 space-y-8">
+              
+              {/* Learning Progress */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">Learning Progress</h2>
+                    <p className="text-sm text-gray-500">Continue where you left off</p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Mock progress items until module progress is fully tracked in backend */}
+                  <ProgressItem title="Zero-Shot Prompting" progress={100} status="Completed" />
+                  <ProgressItem title="Few-Shot Learning" progress={75} status="In Progress" />
+                  <ProgressItem title="Chain-of-Thought" progress={40} status="In Progress" />
+                  <ProgressItem title="Role-play Techniques" progress={0} status="Not Started" />
+                </div>
+
+                <Link to="/modules" className="mt-6 block w-full text-center py-2.5 bg-dark text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
+                  View All Modules
+                </Link>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-1">Recent Activity</h2>
+                <p className="text-sm text-gray-500 mb-6">Your latest achievements and actions</p>
+                
+                <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                  <ActivityItem text={<>Completed <strong>Zero-Shot Prompting</strong> module</>} time="2 hours ago" color="bg-blue-500" />
+                  <ActivityItem text={<>Earned <strong>Quick Learner</strong> badge</>} time="5 hours ago" color="bg-warning" />
+                  <ActivityItem text={<>Submitted <strong>Reverse Challenge #15</strong></>} time="1 day ago" color="bg-purple-500" />
+                  <ActivityItem text={<>Published <strong>Code Generation Prompt</strong></>} time="2 days ago" color="bg-emerald-500" />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <ProgressItem title="Zero-Shot Prompting" progress={100} status="Completed" />
-              <ProgressItem title="Few-Shot Learning" progress={75} status="In Progress" />
-              <ProgressItem title="Chain-of-Thought" progress={40} status="In Progress" />
-              <ProgressItem title="Role-play Techniques" progress={0} status="Not Started" />
-            </div>
+            {/* Sidebar */}
+            <div className="space-y-8">
+              
+              {/* Earned Badges */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-1">Earned Badges</h2>
+                <p className="text-sm text-gray-500 mb-6">Your achievements</p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  {profileData?.badges?.length > 0 ? (
+                    profileData.badges.map((badge, idx) => (
+                      <Badge key={idx} icon={<Award />} title={badge} color="bg-blue-500" />
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500 col-span-2 text-center">No badges earned yet</p>
+                  )}
+                </div>
 
-            <Link to="/modules" className="mt-6 block w-full text-center py-2.5 bg-dark text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
-              View All Modules
-            </Link>
-          </div>
+                <button className="w-full py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">
+                  View All Badges
+                </button>
+              </div>
 
-          {/* Recent Activity */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Recent Activity</h2>
-            <p className="text-sm text-gray-500 mb-6">Your latest achievements and actions</p>
-            
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-              <ActivityItem text={<>Completed <strong>Zero-Shot Prompting</strong> module</>} time="2 hours ago" color="bg-blue-500" />
-              <ActivityItem text={<>Earned <strong>Quick Learner</strong> badge</>} time="5 hours ago" color="bg-warning" />
-              <ActivityItem text={<>Submitted <strong>Reverse Challenge #15</strong></>} time="1 day ago" color="bg-purple-500" />
-              <ActivityItem text={<>Published <strong>Code Generation Prompt</strong></>} time="2 days ago" color="bg-emerald-500" />
-            </div>
-          </div>
-        </div>
+              {/* Quick Actions */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-1">Quick Actions</h2>
+                <p className="text-sm text-gray-500 mb-4">Jump into your learning</p>
+                
+                <div className="space-y-3">
+                  <Link to="/playground" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
+                    <PlayCircle className="w-5 h-5 text-gray-400 group-hover:text-primary" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Test a Prompt</span>
+                  </Link>
+                  <Link to="/challenges" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
+                    <Trophy className="w-5 h-5 text-gray-400 group-hover:text-warning" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Try a Challenge</span>
+                  </Link>
+                  <Link to="/marketplace" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
+                    <BookOpen className="w-5 h-5 text-gray-400 group-hover:text-emerald-500" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Browse Marketplace</span>
+                  </Link>
+                </div>
+              </div>
 
-        {/* Sidebar */}
-        <div className="space-y-8">
-          
-          {/* Earned Badges */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Earned Badges</h2>
-            <p className="text-sm text-gray-500 mb-6">Your achievements</p>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <Badge icon={<Award />} title="First Steps" color="bg-blue-500" />
-              <Badge icon={<Zap />} title="Quick Learner" color="bg-warning" />
-              <Badge icon={<Trophy />} title="Challenger" color="bg-emerald-500" />
-              <Badge icon={<Code />} title="Prompt Master" color="bg-purple-500" />
-            </div>
-
-            <button className="w-full py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">
-              View All Badges
-            </button>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Quick Actions</h2>
-            <p className="text-sm text-gray-500 mb-4">Jump into your learning</p>
-            
-            <div className="space-y-3">
-              <Link to="/playground" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
-                <PlayCircle className="w-5 h-5 text-gray-400 group-hover:text-primary" />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Test a Prompt</span>
-              </Link>
-              <Link to="/challenges" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
-                <Trophy className="w-5 h-5 text-gray-400 group-hover:text-warning" />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Try a Challenge</span>
-              </Link>
-              <Link to="/marketplace" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
-                <BookOpen className="w-5 h-5 text-gray-400 group-hover:text-emerald-500" />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Browse Marketplace</span>
-              </Link>
             </div>
           </div>
-
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

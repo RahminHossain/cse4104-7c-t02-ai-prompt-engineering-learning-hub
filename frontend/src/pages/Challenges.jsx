@@ -1,48 +1,33 @@
+import { useState, useEffect } from 'react';
 import { Trophy, Target, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 const Challenges = () => {
-  const challengesList = [
-    {
-      id: 1,
-      title: "JSON Object Generation",
-      desc: "Generate a prompt that produces a specific JSON structure",
-      difficulty: "Easy",
-      time: "15 min",
-      attempts: 234,
-      successRate: "68%",
-      xp: "+150 XP",
-      completed: true
-    },
-    {
-      id: 2,
-      title: "Code Refactoring Prompt",
-      desc: "Create a prompt that generates clean, refactored code",
-      difficulty: "Medium",
-      time: "20 min",
-      attempts: 156,
-      successRate: "45%",
-      xp: "+300 XP",
-      completed: false
-    },
-    {
-      id: 3,
-      title: "Multi-Step Reasoning",
-      desc: "Engineer a prompt that solves complex problems step-by-step",
-      difficulty: "Hard",
-      time: "30 min",
-      attempts: 89,
-      successRate: "32%",
-      xp: "+500 XP",
-      completed: false
-    }
-  ];
+  const [challengesList, setChallengesList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      try {
+        const { data } = await api.get('/challenges');
+        setChallengesList(data.challenges);
+      } catch (error) {
+        toast.error('Failed to load challenges');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchChallenges();
+  }, []);
+
+  // Mock leaderboard for now
   const leaderboard = [
     { rank: 1, name: "Alice Chen", xp: 4850, badges: 12 },
     { rank: 2, name: "Bob Smith", xp: 4720, badges: 11 },
     { rank: 3, name: "Carol Davis", xp: 4680, badges: 10 },
-    { rank: 4, name: "You (John Doe)", xp: 2450, badges: 5, isUser: true },
+    { rank: 4, name: "You (Student)", xp: 2450, badges: 5, isUser: true },
     { rank: 5, name: "Eve Wilson", xp: 2380, badges: 5 },
   ];
 
@@ -55,9 +40,9 @@ const Challenges = () => {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <MetricCard icon={<Trophy className="text-warning" />} value="12" label="Challenges Won" />
-        <MetricCard icon={<Target className="text-blue-500" />} value="18" label="Total Attempts" />
-        <MetricCard icon={<TrendingUp className="text-emerald-500" />} value="67%" label="Success Rate" />
+        <MetricCard icon={<Trophy className="text-warning" />} value="0" label="Challenges Won" />
+        <MetricCard icon={<Target className="text-blue-500" />} value="0" label="Total Attempts" />
+        <MetricCard icon={<TrendingUp className="text-emerald-500" />} value="0%" label="Success Rate" />
         <MetricCard icon={<CheckCircle2 className="text-purple-500" />} value="#4" label="Global Rank" />
       </div>
 
@@ -70,39 +55,39 @@ const Challenges = () => {
             <button className="px-4 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm font-medium rounded-full transition-colors">Completed</button>
           </div>
 
-          {challengesList.map((challenge) => (
-            <div key={challenge.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-bold text-gray-900">{challenge.title}</h3>
-                <span className="px-3 py-1 bg-warning/10 text-warning text-xs font-bold rounded-full">
-                  {challenge.xp}
-                </span>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">{challenge.desc}</p>
-              
-              <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-6">
-                <span className={`px-2 py-1 rounded font-medium ${
-                  challenge.difficulty === 'Easy' ? 'bg-emerald-100 text-emerald-700' :
-                  challenge.difficulty === 'Medium' ? 'bg-blue-100 text-blue-700' :
-                  'bg-purple-100 text-purple-700'
-                }`}>
-                  {challenge.difficulty}
-                </span>
-                <span className="flex items-center gap-1"><Target className="w-3 h-3" /> {challenge.time}</span>
-                <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> {challenge.attempts} attempts &bull; {challenge.successRate} success</span>
-              </div>
+          {loading ? (
+            <p className="text-gray-500 py-4 text-center">Loading challenges...</p>
+          ) : challengesList.length === 0 ? (
+            <p className="text-gray-500 py-4 text-center">No challenges available.</p>
+          ) : (
+            challengesList.map((challenge) => (
+              <div key={challenge._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-gray-900">{challenge.title}</h3>
+                  <span className="px-3 py-1 bg-warning/10 text-warning text-xs font-bold rounded-full">
+                    +{challenge.xp || 100} XP
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">{challenge.promptTask}</p>
+                
+                <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-6">
+                  <span className={`px-2 py-1 rounded font-medium capitalize ${
+                    challenge.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
+                    challenge.difficulty === 'medium' ? 'bg-blue-100 text-blue-700' :
+                    'bg-purple-100 text-purple-700'
+                  }`}>
+                    {challenge.difficulty}
+                  </span>
+                  <span className="flex items-center gap-1"><Target className="w-3 h-3" /> {challenge.time || '15 min'}</span>
+                  <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> {challenge.attempts || 0} attempts &bull; {challenge.successRate || '0%'} success</span>
+                </div>
 
-              {challenge.completed ? (
-                <button disabled className="w-full py-2.5 bg-gray-100 text-gray-400 font-medium rounded-lg text-sm cursor-not-allowed flex items-center justify-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" /> Completed
-                </button>
-              ) : (
-                <Link to="/playground" className="block w-full text-center py-2.5 bg-dark text-white font-medium rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                <Link to={`/playground?challengeId=${challenge._id}`} className="block w-full text-center py-2.5 bg-dark text-white font-medium rounded-lg text-sm hover:bg-gray-800 transition-colors">
                   Start Challenge
                 </Link>
-              )}
-            </div>
-          ))}
+              </div>
+            ))
+          )}
 
           {/* How Challenges Work */}
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-8">

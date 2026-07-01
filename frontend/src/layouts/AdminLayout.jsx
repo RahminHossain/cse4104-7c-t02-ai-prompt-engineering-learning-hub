@@ -1,4 +1,4 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { BrainCircuit, LogOut, LayoutDashboard, Users, BookOpen, ShoppingBag, BarChart3 } from 'lucide-react';
@@ -7,11 +7,22 @@ const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentTab = searchParams.get('tab') || 'Users';
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
   };
+
+  const navItems = [
+    { name: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, tab: 'Users' },
+    { name: 'User Management', icon: <Users className="w-5 h-5" />, tab: 'Users' },
+    { name: 'Learning Modules', icon: <BookOpen className="w-5 h-5" />, tab: 'Modules' },
+    { name: 'Marketplace', icon: <ShoppingBag className="w-5 h-5" />, tab: 'Marketplace' },
+    { name: 'Platform Analytics', icon: <BarChart3 className="w-5 h-5" />, tab: 'Analytics' },
+  ];
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -23,21 +34,20 @@ const AdminLayout = () => {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          <Link to="/admin" className="flex items-center gap-3 px-3 py-2 bg-gray-800 text-white rounded-md">
-            <LayoutDashboard className="w-5 h-5 text-gray-400" /> Dashboard
-          </Link>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors">
-            <Users className="w-5 h-5" /> User Management
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors">
-            <BookOpen className="w-5 h-5" /> Learning Modules
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors">
-            <ShoppingBag className="w-5 h-5" /> Marketplace
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors">
-            <BarChart3 className="w-5 h-5" /> Platform Analytics
-          </button>
+          {navItems.map((item, idx) => {
+            const isActive = currentTab === item.tab && (item.name !== 'Dashboard' || currentTab === 'Dashboard'); // Dashboard is slightly tricky, we just map it to Users for now
+            return (
+              <Link 
+                key={idx}
+                to={`/admin?tab=${item.tab}`} 
+                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                  isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                }`}
+              >
+                {item.icon} {item.name}
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="p-4 border-t border-gray-800">
@@ -67,7 +77,6 @@ const AdminLayout = () => {
             <BrainCircuit className="h-6 w-6 text-primary" />
             <span className="font-bold text-gray-900">Admin Portal</span>
           </div>
-          {/* Menu button placeholder for mobile */}
         </header>
 
         <div className="flex-1 overflow-y-auto">

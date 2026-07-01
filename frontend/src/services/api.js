@@ -4,7 +4,7 @@ import { store } from '../store';
 import { logout } from '../store/slices/authSlice';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://teem-01.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,7 +29,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const message = error.response?.data?.message || 'Something went wrong';
-    
+
     // If the token is invalid or expired, log the user out globally
     if (error.response?.status === 401) {
       store.dispatch(logout());
@@ -40,7 +40,7 @@ api.interceptors.response.use(
       // but it's good for a robust fallback).
       toast.error(message);
     }
-    
+
     return Promise.reject(error);
   }
 );
