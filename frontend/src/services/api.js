@@ -4,7 +4,7 @@ import { store } from '../store';
 import { logout } from '../store/slices/authSlice';
 
 const api = axios.create({
-  baseURL: 'https://cse4104-7c-t02-ai-prompt-engineering-9nx9.onrender.com',
+  baseURL: 'https://ai-prompt-engineering-learning-hub.onrender.com/api/',
   headers: {
     'Content-Type': 'application/json',
   },
