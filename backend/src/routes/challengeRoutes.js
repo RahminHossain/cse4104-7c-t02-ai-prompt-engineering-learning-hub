@@ -6,6 +6,7 @@ const {
   getChallengeById,
   updateChallenge,
   deleteChallenge,
+  submitChallenge
 } = require('../controllers/challengeController');
 const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.get('/', listChallenges);
 router.get('/:id', [param('id').isMongoId().withMessage('Invalid challenge id')], validateRequest, getChallengeById);
+router.post('/:id/submit', authenticate, [param('id').isMongoId().withMessage('Invalid challenge id')], validateRequest, submitChallenge);
 router.post(
   '/',
   authenticate,

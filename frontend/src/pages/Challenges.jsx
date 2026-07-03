@@ -3,10 +3,12 @@ import { Trophy, Target, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import ChallengeSubmitModal from '../components/ChallengeSubmitModal';
 
 const Challenges = () => {
   const [challengesList, setChallengesList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -37,6 +39,12 @@ const Challenges = () => {
         <h1 className="text-2xl font-bold text-gray-900">Reverse Engineering Challenges</h1>
         <p className="text-gray-600 mt-1">Test your skills by engineering prompts to match target outputs</p>
       </div>
+
+      <ChallengeSubmitModal 
+        isOpen={!!selectedChallenge} 
+        onClose={() => setSelectedChallenge(null)} 
+        challenge={selectedChallenge} 
+      />
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -82,9 +90,9 @@ const Challenges = () => {
                   <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> {challenge.attempts || 0} attempts &bull; {challenge.successRate || '0%'} success</span>
                 </div>
 
-                <Link to={`/playground?challengeId=${challenge._id}`} className="block w-full text-center py-2.5 bg-dark text-white font-medium rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                <button onClick={() => setSelectedChallenge(challenge)} className="block w-full text-center py-2.5 bg-dark text-white font-medium rounded-lg text-sm hover:bg-gray-800 transition-colors">
                   Start Challenge
-                </Link>
+                </button>
               </div>
             ))
           )}

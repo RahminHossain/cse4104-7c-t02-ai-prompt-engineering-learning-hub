@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { BrainCircuit, LogOut, LayoutDashboard, Users, BookOpen, ShoppingBag, BarChart3 } from 'lucide-react';
+import { BrainCircuit, LogOut, LayoutDashboard, Users, BookOpen, ShoppingBag, BarChart3, Settings } from 'lucide-react';
 
 const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
@@ -22,6 +22,7 @@ const AdminLayout = () => {
     { name: 'Learning Modules', icon: <BookOpen className="w-5 h-5" />, tab: 'Modules' },
     { name: 'Marketplace', icon: <ShoppingBag className="w-5 h-5" />, tab: 'Marketplace' },
     { name: 'Platform Analytics', icon: <BarChart3 className="w-5 h-5" />, tab: 'Analytics' },
+    { name: 'Settings', icon: <Settings className="w-5 h-5" />, tab: 'Settings' },
   ];
 
   return (

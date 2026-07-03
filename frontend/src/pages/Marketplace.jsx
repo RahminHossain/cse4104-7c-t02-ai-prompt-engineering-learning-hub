@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Search, Copy, Download, Heart } from 'lucide-react';
+import { Search, Copy, Download, Heart, Plus } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import PublishPromptModal from '../components/PublishPromptModal';
 
 const Marketplace = () => {
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPrompts = async () => {
@@ -38,18 +40,20 @@ const Marketplace = () => {
         <p className="text-gray-600 mt-1">Discover, share, and export enterprise-grade prompts from the community</p>
       </div>
 
-      {/* Search and Action Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-        <div className="relative w-full sm:max-w-lg">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <PublishPromptModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onPromptAdded={(p) => setPrompts([p, ...prompts])} />
+
+      {/* Featured/Search Header */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input 
             type="text" 
-            placeholder="Search prompts..." 
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all shadow-sm"
+            placeholder="Search prompts by keyword, use case, or author..." 
+            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-sm"
           />
         </div>
-        <button className="w-full sm:w-auto px-6 py-2.5 bg-dark text-white font-medium rounded-lg hover:bg-gray-800 transition-colors shrink-0">
-          Publish Prompt
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center justify-center gap-2 px-6 py-3 bg-dark text-white font-medium rounded-xl hover:bg-gray-800 transition-colors shrink-0">
+          <Plus className="w-5 h-5" /> Publish Prompt
         </button>
       </div>
 
