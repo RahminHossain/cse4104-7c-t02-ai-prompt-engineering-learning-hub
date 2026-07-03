@@ -6,6 +6,8 @@ const challengeRoutes = require('./challengeRoutes');
 const adminRoutes = require('./adminRoutes');
 const moduleRoutes = require('./moduleRoutes');
 const marketplaceRoutes = require('./marketplaceRoutes');
+const settingsRoutes = require('./settingsRoutes');
+const aiRoutes = require('./aiRoutes');
 
 const router = express.Router();
 
@@ -20,5 +22,7 @@ router.use('/challenges', challengeRoutes);
 router.use('/admin', adminRoutes);
 router.use('/modules', moduleRoutes);
 router.use('/marketplace', marketplaceRoutes);
+router.use('/settings', settingsRoutes);
+router.use('/ai', aiRoutes);
 
 module.exports = router;

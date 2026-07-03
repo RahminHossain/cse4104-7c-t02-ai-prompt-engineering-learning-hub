@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Send, Settings2, RotateCcw, CheckCircle2, TrendingUp, AlertCircle, Copy, Play } from 'lucide-react';
+import api from '../services/api';
 
 const Playground = () => {
   const [prompt, setPrompt] = useState('Type your prompt here... For example: Act as a senior software engineer.\nReview the following code and provide suggestions for improvement...');
@@ -7,24 +8,18 @@ const Playground = () => {
   const [results, setResults] = useState(null);
   const [activeTab, setActiveTab] = useState('Score'); // Score, Feedback, Optimized
 
-  const handleEvaluate = () => {
+  const handleEvaluate = async () => {
     setIsEvaluating(true);
-    // Simulate API call to Gemini
-    setTimeout(() => {
-      setResults({
-        score: 84,
-        clarity: 92,
-        specificity: 78,
-        constraints: 82,
-        feedback: [
-          { type: 'positive', title: 'Strong Role Definition', desc: 'Clear role assignment helps the AI understand the context' },
-          { type: 'improvement', title: 'Add Specific Constraints', desc: 'Include output format, length limits, or specific requirements' },
-          { type: 'warning', title: 'Missing Context', desc: 'Provide more background information or examples for better results' }
-        ],
-        optimized: `Act as a Senior Software Engineer with 10+ years of experience in code review. Review the following code segment and provide detailed feedback focusing on: 1. Code quality and best practices 2. Performance optimization opportunities 3. Security considerations 4. Maintainability improvements\n\nFormat your response as:\n- Issue: [description]\n- Severity: Low/Medium/High\n- Suggestion: [specific improvement]\n\nProvide 3-5 actionable suggestions.`
+    try {
+      const { data } = await api.post('/ai/evaluate', { prompt });
+      setResults(data);
+    } catch (error) {
+      import('react-hot-toast').then(({ default: toast }) => {
+        toast.error(error.response?.data?.message || 'Failed to evaluate prompt');
       });
+    } finally {
       setIsEvaluating(false);
-    }, 1500);
+    }
   };
 
   return (

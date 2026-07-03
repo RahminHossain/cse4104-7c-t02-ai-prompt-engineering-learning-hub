@@ -5,6 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { BarChart3 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import AddUserModal from '../components/AddUserModal';
+import CreateModuleModal from '../components/CreateModuleModal';
 
 const AdminPanel = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,8 +63,8 @@ const AdminPanel = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-gray-100 p-1 rounded-lg w-full max-w-[400px] mb-6 overflow-x-auto">
-        {['Users', 'Modules', 'Marketplace', 'Analytics'].map((tab) => (
+      <div className="flex bg-gray-100 p-1 rounded-lg w-full max-w-[450px] mb-6 overflow-x-auto">
+        {['Users', 'Modules', 'Marketplace', 'Analytics', 'Settings'].map((tab) => (
           <button
             key={tab}
             onClick={() => setSearchParams({ tab })}
@@ -81,6 +83,7 @@ const AdminPanel = () => {
         {activeTab === 'Modules' && <ModulesManagement />}
         {activeTab === 'Marketplace' && <MarketplaceManagement />}
         {activeTab === 'Analytics' && <PlatformAnalytics />}
+        {activeTab === 'Settings' && <SettingsManagement />}
       </div>
     </div>
   );
@@ -89,6 +92,7 @@ const AdminPanel = () => {
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -119,6 +123,8 @@ const UserManagement = () => {
 
   return (
     <div className="p-6">
+      <AddUserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onUserAdded={(user) => setUsers([user, ...users])} />
+      
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-lg font-bold text-gray-900">User Management</h2>
         <div className="flex gap-4 w-full sm:w-auto">
@@ -126,7 +132,7 @@ const UserManagement = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" placeholder="Search users..." className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800 shrink-0">
+          <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800 shrink-0">
             <Plus className="w-4 h-4" /> Add User
           </button>
         </div>
@@ -182,6 +188,7 @@ const UserManagement = () => {
 const ModulesManagement = () => {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchModules();
@@ -212,9 +219,11 @@ const ModulesManagement = () => {
 
   return (
     <div className="p-6">
+      <CreateModuleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onModuleAdded={(mod) => setModules([mod, ...modules])} />
+      
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-bold text-gray-900">Learning Modules</h2>
-        <button className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800">
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800">
           <Plus className="w-4 h-4" /> Create Module
         </button>
       </div>
@@ -433,6 +442,69 @@ const PlatformAnalytics = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const SettingsManagement = () => {
+  const [apiKey, setApiKey] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get('/settings?key=openrouter_api_key');
+        if (data.openrouter_api_key) setApiKey(data.openrouter_api_key);
+      } catch (error) {
+        toast.error('Failed to load settings');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await api.put('/settings', { key: 'openrouter_api_key', value: apiKey });
+      toast.success('Settings saved successfully');
+    } catch (error) {
+      toast.error('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-2xl">
+      <h2 className="text-lg font-bold text-gray-900 mb-6">AI Integration Settings</h2>
+      
+      {loading ? (
+        <p className="text-gray-500">Loading settings...</p>
+      ) : (
+        <div className="space-y-6">
+          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900 mb-2">OpenRouter API Key</h3>
+            <p className="text-sm text-gray-500 mb-4">Required for the Playground evaluation and Prompt Challenges.</p>
+            <input 
+              type="password" 
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="sk-or-v1-..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary font-mono text-sm mb-4"
+            />
+            <button 
+              onClick={handleSave} 
+              disabled={saving}
+              className="px-4 py-2 bg-dark text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-75"
+            >
+              {saving ? 'Saving...' : 'Save Settings'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
