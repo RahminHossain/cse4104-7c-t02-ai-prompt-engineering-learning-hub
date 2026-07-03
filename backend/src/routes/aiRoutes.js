@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { evaluate } = require('../controllers/aiController');
-const { protect } = require('../middleware/authMiddleware');
+const { authenticate } = require('../middleware/authMiddleware');
 
-router.post('/evaluate', protect, evaluate);
+router.post('/evaluate', authenticate, evaluate);
 
 module.exports = router;
