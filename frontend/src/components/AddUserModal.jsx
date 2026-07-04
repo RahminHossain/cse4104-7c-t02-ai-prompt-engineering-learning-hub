@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 
 const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'student' });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'user' });
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -48,7 +48,7 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm">
-              <option value="student">Student</option>
+              <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>

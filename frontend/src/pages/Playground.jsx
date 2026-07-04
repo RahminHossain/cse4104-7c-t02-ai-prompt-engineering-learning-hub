@@ -5,8 +5,15 @@ import api from '../services/api';
 const Playground = () => {
   const [prompt, setPrompt] = useState('Type your prompt here... For example: Act as a senior software engineer.\nReview the following code and provide suggestions for improvement...');
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const [results, setResults] = useState(null);
   const [activeTab, setActiveTab] = useState('Score'); // Score, Feedback, Optimized
+
+  const templates = {
+    role: "Act as a [role]. Your task is to [task] while following these constraints: [constraints].",
+    fewShot: "Here are some examples:\nInput: [example 1]\nOutput: [result 1]\n\nInput: [example 2]\nOutput: [result 2]\n\nNow process this input: [your input]",
+    cot: "Let's think step by step to solve this problem:\n1. First, [step 1]\n2. Then, [step 2]\n3. Finally, [step 3]\n\nProblem: [your problem]"
+  };
 
   const handleEvaluate = async () => {
     setIsEvaluating(true);
@@ -19,6 +26,23 @@ const Playground = () => {
       });
     } finally {
       setIsEvaluating(false);
+    }
+  };
+
+  const handleOptimize = async () => {
+    setIsOptimizing(true);
+    try {
+      const { data } = await api.post('/ai/evaluate', { prompt });
+      if (data.optimized) {
+        setPrompt(data.optimized);
+        import('react-hot-toast').then(({ default: toast }) => toast.success('Prompt optimized!'));
+      }
+    } catch (error) {
+      import('react-hot-toast').then(({ default: toast }) => {
+        toast.error(error.response?.data?.message || 'Failed to optimize prompt');
+      });
+    } finally {
+      setIsOptimizing(false);
     }
   };
 
@@ -64,8 +88,16 @@ const Playground = () => {
                   <><Send className="w-4 h-4" /> Evaluate Prompt</>
                 )}
               </button>
-              <button className="flex items-center justify-center gap-2 px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shrink-0">
-                <Settings2 className="w-4 h-4" /> Optimize
+              <button 
+                onClick={handleOptimize}
+                disabled={isOptimizing || !prompt.trim()}
+                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-75 transition-colors shrink-0"
+              >
+                {isOptimizing ? (
+                  <span className="flex items-center gap-2">Optimizing <span className="animate-pulse">...</span></span>
+                ) : (
+                  <><Settings2 className="w-4 h-4" /> Optimize</>
+                )}
               </button>
             </div>
           </div>
@@ -195,15 +227,15 @@ const Playground = () => {
             <p className="text-sm text-gray-500 mb-4">Common prompt structures</p>
             
             <div className="space-y-3">
-              <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-all group">
+              <button onClick={() => setPrompt(templates.role)} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-all group">
                 <h4 className="font-semibold text-sm text-gray-900 group-hover:text-primary">Role-Based Prompt</h4>
                 <p className="text-xs text-gray-500 mt-1">Act as a [role]...</p>
               </button>
-              <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-all group">
+              <button onClick={() => setPrompt(templates.fewShot)} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-all group">
                 <h4 className="font-semibold text-sm text-gray-900 group-hover:text-primary">Few-Shot Example</h4>
                 <p className="text-xs text-gray-500 mt-1">Here are examples...</p>
               </button>
-              <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-all group">
+              <button onClick={() => setPrompt(templates.cot)} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-all group">
                 <h4 className="font-semibold text-sm text-gray-900 group-hover:text-primary">Chain-of-Thought</h4>
                 <p className="text-xs text-gray-500 mt-1">Let's think step by step...</p>
               </button>

@@ -30,12 +30,12 @@ const seed = async () => {
     badges: ['Admin', 'Early Adopter'],
   });
 
-  const studentPassword = await bcrypt.hash('StudentPass123!', 12);
-  const student = await User.create({
-    name: 'John Student',
-    email: 'student@teem01.com',
-    password: studentPassword,
-    role: 'student',
+  const userPassword = await bcrypt.hash('UserPass123!', 12);
+  const user = await User.create({
+    name: 'John User',
+    email: 'user@teem01.com',
+    password: userPassword,
+    role: 'user',
     xp: 120,
     badges: ['Fast Learner'],
   });
@@ -86,7 +86,7 @@ const seed = async () => {
     downloads: 500,
     price: 'Free',
     status: 'Approved',
-    createdBy: student._id,
+    createdBy: user._id,
   });
 
   await MarketplacePrompt.create({

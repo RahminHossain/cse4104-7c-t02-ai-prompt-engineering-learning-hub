@@ -69,7 +69,7 @@ const ModulesPage = () => {
 
 const ModuleCard = ({ module }) => {
   // Using status from DB, assuming 'Draft' means locked/hidden and 'Published' means accessible.
-  // For student progress, we'd normally check user.completedModules.
+  // For user progress, we'd normally check user.completedModules.
   const isLocked = module.status === 'Draft';
   const isCompleted = false; // We'd check if module._id is in user.completedModules
   const inProgress = false; // Add real tracking logic here
