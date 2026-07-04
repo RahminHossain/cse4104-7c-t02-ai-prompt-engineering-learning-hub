@@ -7,7 +7,7 @@
 - `name` (String, required)
 - `email` (String, required, unique)
 - `password` (String, required, bcrypt hash)
-- `role` (Enum: `student`, `admin`)
+- `role` (Enum: `user`, `admin`)
 - `bio` (String)
 - `createdAt`, `updatedAt`
 

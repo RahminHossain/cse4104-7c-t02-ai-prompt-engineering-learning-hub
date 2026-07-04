@@ -29,7 +29,7 @@ const Challenges = () => {
     { rank: 1, name: "Alice Chen", xp: 4850, badges: 12 },
     { rank: 2, name: "Bob Smith", xp: 4720, badges: 11 },
     { rank: 3, name: "Carol Davis", xp: 4680, badges: 10 },
-    { rank: 4, name: "You (Student)", xp: 2450, badges: 5, isUser: true },
+    { rank: 4, name: "You (User)", xp: 2450, badges: 5, isUser: true },
     { rank: 5, name: "Eve Wilson", xp: 2380, badges: 5 },
   ];
 
