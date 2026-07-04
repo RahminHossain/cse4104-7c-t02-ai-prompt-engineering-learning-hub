@@ -102,6 +102,58 @@ const seed = async () => {
     createdBy: admin._id,
   });
 
+  await Module.create({
+    title: 'Chain of Thought Reasoning',
+    desc: 'Encourage the AI to think step-by-step for complex problem solving.',
+    level: 'Advanced',
+    lessons: 4,
+    time: '2 hours',
+    status: 'Published',
+    enrollments: 12,
+  });
+
+  await PromptChallenge.create({
+    title: 'JSON Data Extraction',
+    promptTask: 'Extract names and emails from a raw text block and format exactly as a JSON array.',
+    expectedOutcome: 'Output is strictly valid JSON with no markdown wrapping or additional text.',
+    difficulty: 'medium',
+    createdBy: admin._id,
+  });
+
+  await PromptChallenge.create({
+    title: 'Tone Adjustment',
+    promptTask: 'Rewrite a highly technical, aggressive email into a polite, professional, and easy-to-understand message for a client.',
+    expectedOutcome: 'The final output must be polite, non-technical, and professional.',
+    difficulty: 'hard',
+    createdBy: user._id,
+  });
+
+  await MarketplacePrompt.create({
+    title: 'SEO Blog Post Generator',
+    authorName: 'MarketingPro',
+    category: 'Marketing',
+    desc: 'Generates fully SEO-optimized blog posts including meta descriptions, headings, and keyword density rules.',
+    tags: ['seo', 'blog', 'writing'],
+    likes: 215,
+    downloads: 1200,
+    price: 'Free',
+    status: 'Approved',
+    createdBy: admin._id,
+  });
+
+  await MarketplacePrompt.create({
+    title: 'UX Copywriter Assistant',
+    authorName: 'DesignNinja',
+    category: 'Design',
+    desc: 'Specialized prompt to generate short, punchy microcopy for buttons, tooltips, and error messages.',
+    tags: ['ux', 'copywriting', 'design'],
+    likes: 56,
+    downloads: 190,
+    price: 'Free',
+    status: 'Approved',
+    createdBy: user._id,
+  });
+
   await Setting.create({
     key: 'openrouter_model',
     value: 'poolside/laguna-xs-2.1:free',
