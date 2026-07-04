@@ -448,14 +448,16 @@ const PlatformAnalytics = () => {
 
 const SettingsManagement = () => {
   const [apiKey, setApiKey] = useState('');
+  const [model, setModel] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const { data } = await api.get('/settings?key=openrouter_api_key');
+        const { data } = await api.get('/settings');
         if (data.openrouter_api_key) setApiKey(data.openrouter_api_key);
+        if (data.openrouter_model) setModel(data.openrouter_model);
       } catch (error) {
         toast.error('Failed to load settings');
       } finally {
@@ -469,6 +471,7 @@ const SettingsManagement = () => {
     try {
       setSaving(true);
       await api.put('/settings', { key: 'openrouter_api_key', value: apiKey });
+      await api.put('/settings', { key: 'openrouter_model', value: model });
       toast.success('Settings saved successfully');
     } catch (error) {
       toast.error('Failed to save settings');
@@ -486,15 +489,32 @@ const SettingsManagement = () => {
       ) : (
         <div className="space-y-6">
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 mb-2">OpenRouter API Key</h3>
-            <p className="text-sm text-gray-500 mb-4">Required for the Playground evaluation and Prompt Challenges.</p>
-            <input 
-              type="password" 
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="sk-or-v1-..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary font-mono text-sm mb-4"
-            />
+            <h3 className="text-sm font-bold text-gray-900 mb-2">OpenRouter Configuration</h3>
+            <p className="text-sm text-gray-500 mb-4">API Key and Model are required for the Playground and Challenges.</p>
+            
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-700 mb-1">API Key</label>
+              <input 
+                type="password" 
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-or-v1-..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary font-mono text-sm"
+              />
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-xs font-medium text-gray-700 mb-1">AI Model</label>
+              <input 
+                type="text" 
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                placeholder="e.g. poolside/laguna-xs-2.1:free"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary font-mono text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">Leave empty to use the default model.</p>
+            </div>
+
             <button 
               onClick={handleSave} 
               disabled={saving}
