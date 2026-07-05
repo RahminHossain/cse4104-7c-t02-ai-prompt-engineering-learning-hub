@@ -98,7 +98,7 @@ This project addresses that challenge by providing an interactive AI-powered env
 
 ### AI Services
 
-* Google Gemini API
+* [OpenRouter.AI](https://openrouter.ai/)
 
 ### Development Tools
 
