@@ -13,7 +13,14 @@ const CreateModuleModal = ({ isOpen, onClose, onModuleAdded }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await api.post('/modules', formData);
+      const dataToSubmit = {
+        title: formData.title,
+        desc: formData.description,
+        level: formData.difficulty,
+        lessons: 5,
+        time: '1 hour'
+      };
+      const { data } = await api.post('/modules', dataToSubmit);
       toast.success('Module created successfully');
       onModuleAdded(data.module);
       onClose();

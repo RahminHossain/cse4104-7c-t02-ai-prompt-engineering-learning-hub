@@ -16,9 +16,12 @@ const PublishPromptModal = ({ isOpen, onClose, onPromptAdded }) => {
     setLoading(true);
     try {
       const dataToSubmit = {
-        ...formData,
+        title: formData.title,
+        desc: formData.description,
+        promptText: formData.promptText,
         tags: formData.tags.split(',').map(t => t.trim()),
-        authorName: user?.name || 'Anonymous'
+        authorName: user?.name || 'Anonymous',
+        category: 'General'
       };
       const { data } = await api.post('/marketplace', dataToSubmit);
       toast.success('Prompt published! Waiting for admin approval.');

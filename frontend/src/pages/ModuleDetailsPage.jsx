@@ -1,16 +1,48 @@
+import { useState, useEffect } from 'react';
 import { ChevronLeft, CheckCircle2, PlayCircle, FileText, Video, Award } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import api from '../services/api';
 
 const ModuleDetailsPage = () => {
-  const lessons = [
-    { id: 1, title: 'What is Few-Shot Learning?', duration: '8 min', status: 'completed' },
-    { id: 2, title: 'Providing Examples', duration: '12 min', status: 'completed' },
-    { id: 3, title: 'Example Selection Strategies', duration: '15 min', status: 'completed' },
-    { id: 4, title: 'Practical Exercise: Few-Shot Classification', duration: '20 min', status: 'completed' },
-    { id: 5, title: 'Common Mistakes to Avoid', duration: '10 min', status: 'completed' },
-    { id: 6, title: 'Advanced Techniques', duration: '18 min', status: 'pending' },
-    { id: 7, title: 'Final Quiz', duration: '15 min', status: 'pending' },
-  ];
+  const { id } = useParams();
+  const [module, setModule] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchModule = async () => {
+      try {
+        const { data } = await api.get(`/modules/${id}`);
+        setModule(data.module);
+      } catch (error) {
+        console.error('Failed to fetch module details', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchModule();
+  }, [id]);
+
+  if (loading) {
+    return <div className="text-center py-12">Loading module...</div>;
+  }
+
+  if (!module) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Module not found</h2>
+        <Link to="/modules" className="text-primary hover:underline">Return to Modules</Link>
+      </div>
+    );
+  }
+
+  // Handle older modules that don't have a lessonList array
+  const lessons = module.lessonList && module.lessonList.length > 0 
+    ? module.lessonList 
+    : [];
+
+  const completedCount = lessons.filter(l => l.status === 'completed').length;
+  const totalCount = lessons.length > 0 ? lessons.length : module.lessons; // fallback to the count field
+  const progressPercent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -24,25 +56,29 @@ const ModuleDetailsPage = () => {
           
           {/* Header Card */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-            <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded mb-4">
-              Intermediate
+            <span className={`inline-block px-2 py-1 text-xs font-medium rounded mb-4 ${
+              module.level === 'Beginner' ? 'bg-emerald-100 text-emerald-700' :
+              module.level === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
+              'bg-purple-100 text-purple-700'
+            }`}>
+              {module.level}
             </span>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Few-Shot Learning</h1>
-            <p className="text-gray-600 mb-6">Provide examples to guide AI responses effectively</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{module.title}</h1>
+            <p className="text-gray-600 mb-6">{module.desc}</p>
 
             <div className="flex items-center gap-4 text-sm text-gray-500 mb-8">
-              <span>7 lessons</span>
+              <span>{totalCount} lessons</span>
               <span>&bull;</span>
-              <span>1.5 hours</span>
+              <span>{module.time}</span>
               <span>&bull;</span>
-              <span>75% Complete</span>
+              <span>{progressPercent}% Complete</span>
             </div>
 
             <div>
               <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
-                <div className="bg-dark h-2 rounded-full" style={{ width: '75%' }}></div>
+                <div className="bg-dark h-2 rounded-full" style={{ width: `${progressPercent}%` }}></div>
               </div>
-              <p className="text-sm font-medium text-gray-700">5 of 7 lessons completed</p>
+              <p className="text-sm font-medium text-gray-700">{completedCount} of {totalCount} lessons completed</p>
             </div>
           </div>
 
@@ -52,36 +88,40 @@ const ModuleDetailsPage = () => {
             <p className="text-sm text-gray-500 mb-6">Complete all lessons to finish this module</p>
 
             <div className="space-y-4">
-              {lessons.map((lesson) => (
-                <div key={lesson.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start gap-4">
-                    {lesson.status === 'completed' ? (
-                      <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 shrink-0 mt-0.5" />
-                    )}
-                    <div>
-                      <h3 className={`font-semibold ${lesson.status === 'completed' ? 'text-gray-900' : 'text-gray-700'}`}>
-                        {lesson.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">{lesson.duration}</p>
+              {lessons.length === 0 ? (
+                <p className="text-gray-500 py-4 text-center border border-dashed rounded">This module currently has no detailed lessons added to the database.</p>
+              ) : (
+                lessons.map((lesson, index) => (
+                  <div key={lesson._id || index} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start gap-4">
+                      {lesson.status === 'completed' ? (
+                        <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 shrink-0 mt-0.5" />
+                      )}
+                      <div>
+                        <h3 className={`font-semibold ${lesson.status === 'completed' ? 'text-gray-900' : 'text-gray-700'}`}>
+                          {lesson.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">{lesson.duration} &bull; {lesson.isQuiz ? 'Quiz' : 'Reading'}</p>
+                      </div>
                     </div>
+                    {lesson.status === 'completed' ? (
+                      <button className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                        Review
+                      </button>
+                    ) : (
+                      <button className="px-4 py-1.5 text-sm font-medium text-white bg-dark rounded hover:bg-gray-800 transition-colors">
+                        Start
+                      </button>
+                    )}
                   </div>
-                  {lesson.status === 'completed' ? (
-                    <button className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-                      Review
-                    </button>
-                  ) : (
-                    <button className="px-4 py-1.5 text-sm font-medium text-white bg-dark rounded hover:bg-gray-800 transition-colors">
-                      Start
-                    </button>
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
-          {/* Example Prompts */}
+          {/* Example Prompts - We keep this section static for now as a design choice or placeholder */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-1">Example Prompts</h2>
             <p className="text-sm text-gray-500 mb-4">Learn from these practical examples</p>
@@ -108,23 +148,19 @@ const ModuleDetailsPage = () => {
             <ul className="space-y-3">
               <li className="flex gap-3 text-sm text-gray-700">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                Understand few-shot learning principles
+                Master the core concepts of this topic
               </li>
               <li className="flex gap-3 text-sm text-gray-700">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                Select effective examples
+                Select effective examples and context
               </li>
               <li className="flex gap-3 text-sm text-gray-700">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                Structure prompts with examples
+                Structure prompts professionally
               </li>
               <li className="flex gap-3 text-sm text-gray-700">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                Apply few-shot techniques in practice
-              </li>
-              <li className="flex gap-3 text-sm text-gray-700">
-                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                Optimize example selection
+                Apply techniques in practical scenarios
               </li>
             </ul>
           </div>

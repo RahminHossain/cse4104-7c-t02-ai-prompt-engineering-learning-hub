@@ -15,6 +15,7 @@ router.post(
   [
     body('title').notEmpty(),
     body('desc').notEmpty(),
+    body('promptText').notEmpty(),
     body('category').notEmpty(),
     body('authorName').notEmpty()
   ],
