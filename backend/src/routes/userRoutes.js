@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { getProfile, updateProfile, getAllUsers, deleteUser } = require('../controllers/userController');
+const { getProfile, updateProfile, getAllUsers, deleteUser, updateUser } = require('../controllers/userController');
 const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
 
@@ -22,5 +22,6 @@ router.put(
 // Admin Routes
 router.get('/', authenticate, authorizeRoles('admin'), getAllUsers);
 router.delete('/:id', authenticate, authorizeRoles('admin'), deleteUser);
+router.put('/:id', authenticate, authorizeRoles('admin'), updateUser);
 
 module.exports = router;
