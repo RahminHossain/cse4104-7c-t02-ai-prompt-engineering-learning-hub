@@ -107,13 +107,13 @@ const ModuleDetailsPage = () => {
                       </div>
                     </div>
                     {lesson.status === 'completed' ? (
-                      <button className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                      <Link to={`/modules/${module._id}/lessons/${index}`} className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
                         Review
-                      </button>
+                      </Link>
                     ) : (
-                      <button className="px-4 py-1.5 text-sm font-medium text-white bg-dark rounded hover:bg-gray-800 transition-colors">
+                      <Link to={`/modules/${module._id}/lessons/${index}`} className="px-4 py-1.5 text-sm font-medium text-white bg-dark rounded hover:bg-gray-800 transition-colors shadow-sm">
                         Start
-                      </button>
+                      </Link>
                     )}
                   </div>
                 ))
