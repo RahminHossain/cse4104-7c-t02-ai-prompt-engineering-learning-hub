@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Trash2, Plus, BookOpen } from 'lucide-react';
+import { X, Trash2, Plus, BookOpen, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 
@@ -51,6 +51,28 @@ const ManageLessonsModal = ({ isOpen, onClose, module, onModuleUpdated }) => {
     }
   };
 
+  const handleMagicGenerate = () => {
+    setShowAddForm(true);
+    setNewLesson({
+      title: 'Advanced AI Techniques (Auto-Generated)',
+      duration: '15 min',
+      isQuiz: false,
+      content: `## Welcome to Advanced Techniques!
+
+This is an automatically generated lesson demonstrating the power of AI prompting.
+
+### Key Concepts
+1. **Chain of Thought Reasoning:** Helps models break down complex problems.
+2. **Few-Shot Prompting:** Providing examples drastically improves output formatting.
+3. **Retrieval-Augmented Generation (RAG):** Grounding models in factual data.
+
+> "The better the context, the better the output." - AI Proverb
+
+Try writing a prompt using these three techniques and see the difference!`
+    });
+    toast.success('Dummy lesson generated! You can now edit and save it.');
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
@@ -62,7 +84,17 @@ const ManageLessonsModal = ({ isOpen, onClose, module, onModuleUpdated }) => {
             </h2>
             <p className="text-sm text-gray-500 mt-1">Module: {module.title}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X className="w-5 h-5" /></button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleMagicGenerate}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-purple-700 bg-purple-100 rounded-lg hover:bg-purple-200 transition-colors shadow-sm"
+              title="Magic Generate Dummy Lesson"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>AI GENERATE</span>
+            </button>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-900 bg-gray-100 p-1.5 rounded-full"><X className="w-4 h-4" /></button>
+          </div>
         </div>
 
         {/* Content Area */}

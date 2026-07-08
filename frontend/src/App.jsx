@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/ProfilePage';
 import ModulesPage from './pages/ModulesPage';
 import ModuleDetailsPage from './pages/ModuleDetailsPage';
+import LessonViewerPage from './pages/LessonViewerPage';
 import Playground from './pages/Playground';
 import Challenges from './pages/Challenges';
 import Marketplace from './pages/Marketplace';
@@ -46,6 +47,11 @@ function App() {
             <Route path="/challenges" element={<Challenges />} />
             <Route path="/marketplace" element={<Marketplace />} />
           </Route>
+
+        {/* Full-Screen Protected Routes (No Nav/Footer) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/modules/:moduleId/lessons/:lessonIndex" element={<LessonViewerPage />} />
+        </Route>
         </Route>
 
         {/* Protected Routes for Admins (Using AdminLayout) */}
