@@ -272,7 +272,7 @@ const ModulesManagement = () => {
               {modules.map((mod) => (
                 <tr key={mod._id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-4 pl-4 font-medium text-gray-900">{mod.title}</td>
-                  <td className="py-4 text-gray-600">{mod.lessons}</td>
+                  <td className="py-4 text-gray-600">{mod.lessonList?.length || 0}</td>
                   <td className="py-4 text-gray-600">{mod.enrollments || 0}</td>
                   <td className="py-4">
                     <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${mod.status === 'Published' ? 'bg-dark text-white' : 'bg-gray-100 text-gray-500'}`}>
