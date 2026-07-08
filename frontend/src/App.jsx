@@ -16,6 +16,7 @@ import Marketplace from './pages/Marketplace';
 
 import AdminLayout from './layouts/AdminLayout';
 import AdminPanel from './pages/AdminPanel';
+import AdminTestPage from './pages/AdminTestPage';
 
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -51,6 +52,7 @@ function App() {
         <Route element={<AdminRoute />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/test" element={<AdminTestPage />} />
           </Route>
         </Route>
 
