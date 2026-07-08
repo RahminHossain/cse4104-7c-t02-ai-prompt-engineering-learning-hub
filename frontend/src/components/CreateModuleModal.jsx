@@ -17,7 +17,7 @@ const CreateModuleModal = ({ isOpen, onClose, onModuleAdded }) => {
         title: formData.title,
         desc: formData.description,
         level: formData.difficulty,
-        lessons: 5,
+        lessons: 0,
         time: '1 hour'
       };
       const { data } = await api.post('/modules', dataToSubmit);
