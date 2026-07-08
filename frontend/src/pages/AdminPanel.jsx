@@ -9,6 +9,7 @@ import AddUserModal from '../components/AddUserModal';
 import CreateModuleModal from '../components/CreateModuleModal';
 import EditUserModal from '../components/EditUserModal';
 import EditModuleModal from '../components/EditModuleModal';
+import ManageLessonsModal from '../components/ManageLessonsModal';
 
 const AdminPanel = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -199,6 +200,7 @@ const ModulesManagement = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingModule, setEditingModule] = useState(null);
+  const [managingLessonsModule, setManagingLessonsModule] = useState(null);
 
   useEffect(() => {
     fetchModules();
@@ -234,6 +236,12 @@ const ModulesManagement = () => {
         isOpen={!!editingModule}
         onClose={() => setEditingModule(null)}
         module={editingModule}
+        onModuleUpdated={(updatedMod) => setModules(modules.map(m => m._id === updatedMod._id ? updatedMod : m))}
+      />
+      <ManageLessonsModal
+        isOpen={!!managingLessonsModule}
+        onClose={() => setManagingLessonsModule(null)}
+        module={managingLessonsModule}
         onModuleUpdated={(updatedMod) => setModules(modules.map(m => m._id === updatedMod._id ? updatedMod : m))}
       />
       
@@ -273,8 +281,9 @@ const ModulesManagement = () => {
                   </td>
                   <td className="py-4 pr-4">
                     <div className="flex items-center justify-end gap-3">
-                      <button onClick={() => setEditingModule(mod)} className="text-gray-400 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(mod._id)} className="text-gray-400 hover:text-danger"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => setManagingLessonsModule(mod)} title="Manage Lessons" className="text-gray-400 hover:text-emerald-500"><BookOpen className="w-4 h-4" /></button>
+                      <button onClick={() => setEditingModule(mod)} title="Edit Module" className="text-gray-400 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => handleDelete(mod._id)} title="Delete Module" className="text-gray-400 hover:text-danger"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
