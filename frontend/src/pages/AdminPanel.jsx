@@ -7,6 +7,8 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import AddUserModal from '../components/AddUserModal';
 import CreateModuleModal from '../components/CreateModuleModal';
+import EditUserModal from '../components/EditUserModal';
+import EditModuleModal from '../components/EditModuleModal';
 
 const AdminPanel = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -93,6 +95,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -124,6 +127,12 @@ const UserManagement = () => {
   return (
     <div className="p-6">
       <AddUserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onUserAdded={(user) => setUsers([user, ...users])} />
+      <EditUserModal 
+        isOpen={!!editingUser} 
+        onClose={() => setEditingUser(null)} 
+        user={editingUser} 
+        onUserUpdated={(updatedUser) => setUsers(users.map(u => u._id === updatedUser._id ? updatedUser : u))} 
+      />
       
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-lg font-bold text-gray-900">User Management</h2>
@@ -171,7 +180,7 @@ const UserManagement = () => {
                   </td>
                   <td className="py-4 pr-4">
                     <div className="flex items-center justify-end gap-3">
-                      <button className="text-gray-400 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => setEditingUser(user)} className="text-gray-400 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => handleDelete(user._id)} className="text-gray-400 hover:text-danger"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
@@ -189,6 +198,7 @@ const ModulesManagement = () => {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingModule, setEditingModule] = useState(null);
 
   useEffect(() => {
     fetchModules();
@@ -220,6 +230,12 @@ const ModulesManagement = () => {
   return (
     <div className="p-6">
       <CreateModuleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onModuleAdded={(mod) => setModules([mod, ...modules])} />
+      <EditModuleModal
+        isOpen={!!editingModule}
+        onClose={() => setEditingModule(null)}
+        module={editingModule}
+        onModuleUpdated={(updatedMod) => setModules(modules.map(m => m._id === updatedMod._id ? updatedMod : m))}
+      />
       
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-bold text-gray-900">Learning Modules</h2>
@@ -257,7 +273,7 @@ const ModulesManagement = () => {
                   </td>
                   <td className="py-4 pr-4">
                     <div className="flex items-center justify-end gap-3">
-                      <button className="text-gray-400 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => setEditingModule(mod)} className="text-gray-400 hover:text-gray-900"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => handleDelete(mod._id)} className="text-gray-400 hover:text-danger"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
