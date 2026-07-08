@@ -7,20 +7,25 @@ import api from '../services/api';
 const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);
   const [profileData, setProfileData] = useState(null);
+  const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get('/users/profile');
-        setProfileData(data.user);
+        const [profileRes, modulesRes] = await Promise.all([
+          api.get('/users/profile'),
+          api.get('/modules')
+        ]);
+        setProfileData(profileRes.data.user);
+        setModules(modulesRes.data.modules || []);
       } catch (error) {
-        console.error('Failed to load profile data', error);
+        console.error('Failed to load dashboard data', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
+    fetchData();
   }, []);
 
   const stats = [
@@ -72,11 +77,26 @@ const Dashboard = () => {
                 </div>
 
                 <div className="space-y-6">
-                  {/* Mock progress items until module progress is fully tracked in backend */}
-                  <ProgressItem title="Zero-Shot Prompting" progress={100} status="Completed" />
-                  <ProgressItem title="Few-Shot Learning" progress={75} status="In Progress" />
-                  <ProgressItem title="Chain-of-Thought" progress={40} status="In Progress" />
-                  <ProgressItem title="Role-play Techniques" progress={0} status="Not Started" />
+                  {modules.length > 0 ? (
+                    modules.slice(0, 4).map(mod => {
+                      const lessons = mod.lessonList || [];
+                      const total = lessons.length;
+                      const completed = lessons.filter(l => l.status === 'completed').length;
+                      const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+                      const status = progress === 100 ? 'Completed' : progress > 0 ? 'In Progress' : 'Not Started';
+                      
+                      return (
+                        <ProgressItem 
+                          key={mod._id} 
+                          title={mod.title} 
+                          progress={progress} 
+                          status={status} 
+                        />
+                      );
+                    })
+                  ) : (
+                    <p className="text-gray-500 text-sm">No modules available yet.</p>
+                  )}
                 </div>
 
                 <Link to="/modules" className="mt-6 block w-full text-center py-2.5 bg-dark text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
