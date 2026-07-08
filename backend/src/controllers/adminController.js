@@ -2,6 +2,8 @@ const User = require('../models/User');
 const Module = require('../models/Module');
 const MarketplacePrompt = require('../models/MarketplacePrompt');
 const PromptChallenge = require('../models/PromptChallenge');
+const { exec } = require('child_process');
+const path = require('path');
 
 const getStats = async (req, res, next) => {
   try {
@@ -35,6 +37,22 @@ const getStats = async (req, res, next) => {
   }
 };
 
+const runSeed = async (req, res, next) => {
+  try {
+    const seedScript = path.join(__dirname, '../../seed/seed.js');
+    exec(`node "${seedScript}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Seed execution error:', error);
+        return res.status(500).json({ message: 'Seed script failed', error: stderr || error.message });
+      }
+      res.status(200).json({ message: 'Database seeded successfully', output: stdout });
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
-  getStats
+  getStats,
+  runSeed
 };
