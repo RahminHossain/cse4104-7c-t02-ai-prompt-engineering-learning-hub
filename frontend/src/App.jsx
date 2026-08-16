@@ -12,8 +12,6 @@ import ModulesPage from './pages/ModulesPage';
 import ModuleDetailsPage from './pages/ModuleDetailsPage';
 import LessonViewerPage from './pages/LessonViewerPage';
 import Playground from './pages/Playground';
-import Challenges from './pages/Challenges';
-import Marketplace from './pages/Marketplace';
 
 import AdminLayout from './layouts/AdminLayout';
 import AdminPanel from './pages/AdminPanel';
@@ -44,8 +42,6 @@ function App() {
             <Route path="/modules" element={<ModulesPage />} />
             <Route path="/modules/:id" element={<ModuleDetailsPage />} />
             <Route path="/playground" element={<Playground />} />
-            <Route path="/challenges" element={<Challenges />} />
-            <Route path="/marketplace" element={<Marketplace />} />
           </Route>
 
         {/* Full-Screen Protected Routes (No Nav/Footer) */}

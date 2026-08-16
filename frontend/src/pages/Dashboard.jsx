@@ -32,7 +32,6 @@ const Dashboard = () => {
     { label: 'Total XP', value: profileData?.xp || '0', icon: <Zap className="text-warning w-6 h-6" />, bgColor: 'bg-yellow-50' },
     { label: 'Modules Completed', value: profileData?.completedModules?.length || '0', icon: <BookOpen className="text-blue-500 w-6 h-6" />, bgColor: 'bg-blue-50' },
     { label: 'Badges Earned', value: profileData?.badges?.length || '0', icon: <Award className="text-purple-500 w-6 h-6" />, bgColor: 'bg-purple-50' },
-    { label: 'Challenges Won', value: '0', icon: <Trophy className="text-emerald-500 w-6 h-6" />, bgColor: 'bg-emerald-50' }, // Assuming challenge tracking comes later
   ];
 
   return (
@@ -49,7 +48,7 @@ const Dashboard = () => {
       ) : (
         <>
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {stats.map((stat, idx) => (
               <div key={idx} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
@@ -112,8 +111,8 @@ const Dashboard = () => {
                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                   <ActivityItem text={<>Completed <strong>Zero-Shot Prompting</strong> module</>} time="2 hours ago" color="bg-blue-500" />
                   <ActivityItem text={<>Earned <strong>Quick Learner</strong> badge</>} time="5 hours ago" color="bg-warning" />
-                  <ActivityItem text={<>Submitted <strong>Reverse Challenge #15</strong></>} time="1 day ago" color="bg-purple-500" />
-                  <ActivityItem text={<>Published <strong>Code Generation Prompt</strong></>} time="2 days ago" color="bg-emerald-500" />
+                  <ActivityItem text={<>Practiced in <strong>AI Playground</strong></>} time="1 day ago" color="bg-emerald-500" />
+                  <ActivityItem text={<>Started <strong>Chain-of-Thought</strong> technique</>} time="2 days ago" color="bg-purple-500" />
                 </div>
               </div>
             </div>
@@ -149,15 +148,11 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <Link to="/playground" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
                     <PlayCircle className="w-5 h-5 text-gray-400 group-hover:text-primary" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Test a Prompt</span>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Test a Prompt in Playground</span>
                   </Link>
-                  <Link to="/challenges" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
-                    <Trophy className="w-5 h-5 text-gray-400 group-hover:text-warning" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Try a Challenge</span>
-                  </Link>
-                  <Link to="/marketplace" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
+                  <Link to="/modules" className="flex items-center gap-3 w-full p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
                     <BookOpen className="w-5 h-5 text-gray-400 group-hover:text-emerald-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Browse Marketplace</span>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Explore Learning Modules</span>
                   </Link>
                 </div>
               </div>

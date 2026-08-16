@@ -43,8 +43,6 @@ const MainLayout = () => {
                   <Link to="/dashboard" className="text-gray-500 hover:text-gray-900">Dashboard</Link>
                   <Link to="/modules" className="text-gray-500 hover:text-gray-900">Modules</Link>
                   <Link to="/playground" className="text-gray-500 hover:text-gray-900">Playground</Link>
-                  <Link to="/challenges" className="text-gray-500 hover:text-gray-900">Challenges</Link>
-                  <Link to="/marketplace" className="text-gray-500 hover:text-gray-900">Marketplace</Link>
                   
                   <div className="flex items-center gap-4 ml-4 pl-4 border-l">
                     <Link to="/profile" className="flex items-center gap-2 text-gray-700 hover:text-primary">

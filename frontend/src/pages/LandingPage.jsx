@@ -55,7 +55,7 @@ const LandingPage = () => {
             <p className="text-gray-600">Everything you need to master prompt engineering.</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
               icon={<Activity className="w-6 h-6 text-blue-500" />}
               title="AI-Powered Evaluation"
@@ -69,16 +69,10 @@ const LandingPage = () => {
               color="bg-emerald-100"
             />
             <FeatureCard 
-              icon={<Trophy className="w-6 h-6 text-purple-500" />}
-              title="Gamified Learning"
-              description="Earn XP points, unlock badges, and complete challenges. Track your progress and compete with others to stay motivated."
+              icon={<PlayCircle className="w-6 h-6 text-purple-500" />}
+              title="Interactive Playground"
+              description="Experiment freely with system prompts, parameters, and variable inputs with instant AI diagnostics and suggestions."
               color="bg-purple-100"
-            />
-            <FeatureCard 
-              icon={<Users className="w-6 h-6 text-orange-500" />}
-              title="Prompt Marketplace"
-              description="Browse, share, and export enterprise-grade prompts. Learn from the community and contribute your own optimized prompts."
-              color="bg-orange-100"
             />
           </div>
         </div>
@@ -96,8 +90,7 @@ const LandingPage = () => {
             <Step icon={<CheckCircle2 />} title="Register & Access Dashboard" desc="Create your account and access your personalized learning dashboard to track progress and XP." index={1} />
             <Step icon={<BookOpen />} title="Complete Learning Modules" desc="Work through structured lessons on prompt engineering techniques with examples and exercises." index={2} />
             <Step icon={<PlayCircle />} title="Test in AI Playground" desc="Submit prompts for real-time evaluation. Get scores, feedback, and optimization suggestions from AI." index={3} />
-            <Step icon={<RefreshCw />} title="Complete Challenges" desc="Participate in reverse engineering challenges to earn XP and badges while honing your skills." index={4} />
-            <Step icon={<Share2 />} title="Share & Export" desc="Publish your prompts to the marketplace and export them for external programmatic use." index={5} />
+            <Step icon={<RefreshCw />} title="Refine & Master Prompts" desc="Apply AI feedback to iterate, optimize, and master industrial-grade prompt engineering." index={4} />
           </div>
         </div>
       </section>

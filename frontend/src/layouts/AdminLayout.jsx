@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { BrainCircuit, LogOut, LayoutDashboard, Users, BookOpen, ShoppingBag, BarChart3, Settings } from 'lucide-react';
+import { BrainCircuit, LogOut, LayoutDashboard, BookOpen, ShoppingBag, BarChart3, Settings, ArrowLeft } from 'lucide-react';
 
 const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
@@ -18,7 +18,6 @@ const AdminLayout = () => {
 
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, tab: 'Users' },
-    { name: 'User Management', icon: <Users className="w-5 h-5" />, tab: 'Users' },
     { name: 'Learning Modules', icon: <BookOpen className="w-5 h-5" />, tab: 'Modules' },
     { name: 'Marketplace', icon: <ShoppingBag className="w-5 h-5" />, tab: 'Marketplace' },
     { name: 'Platform Analytics', icon: <BarChart3 className="w-5 h-5" />, tab: 'Analytics' },
@@ -36,7 +35,7 @@ const AdminLayout = () => {
 
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {navItems.map((item, idx) => {
-            const isActive = currentTab === item.tab && (item.name !== 'Dashboard' || currentTab === 'Dashboard'); // Dashboard is slightly tricky, we just map it to Users for now
+            const isActive = currentTab === item.tab;
             return (
               <Link 
                 key={idx}
@@ -47,8 +46,17 @@ const AdminLayout = () => {
               >
                 {item.icon} {item.name}
               </Link>
-            )
+            );
           })}
+
+          <div className="pt-4 mt-4 border-t border-gray-800">
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-primary" /> Return to Website
+            </Link>
+          </div>
         </nav>
 
         <div className="p-4 border-t border-gray-800">
