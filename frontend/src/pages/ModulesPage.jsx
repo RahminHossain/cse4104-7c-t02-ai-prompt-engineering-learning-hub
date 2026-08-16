@@ -78,13 +78,26 @@ const ModulesPage = () => {
 const ModuleCard = ({ module, userProfile }) => {
   const isLocked = module.status === 'Draft';
   
-  const isCompleted = userProfile?.completedModules?.some(
+  const localLessons = JSON.parse(localStorage.getItem('ai_prompt_completed_lessons') || '[]');
+  const localModules = JSON.parse(localStorage.getItem('ai_prompt_completed_modules') || '[]');
+
+  const allCompletedModules = [
+    ...(userProfile?.completedModules || []),
+    ...localModules
+  ];
+
+  const allCompletedLessons = [
+    ...(userProfile?.completedLessons || []),
+    ...localLessons
+  ];
+
+  const isCompleted = allCompletedModules.some(
     mId => mId.toString() === module._id.toString()
   );
 
-  const userLessons = userProfile?.completedLessons?.filter(
+  const userLessons = allCompletedLessons.filter(
     cl => cl.moduleId?.toString() === module._id.toString()
-  ) || [];
+  );
   
   const completedLessonsCount = isCompleted 
     ? (module.lessonList?.length || module.lessons)

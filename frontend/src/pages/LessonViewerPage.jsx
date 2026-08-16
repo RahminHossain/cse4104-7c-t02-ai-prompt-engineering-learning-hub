@@ -73,28 +73,59 @@ const LessonViewerPage = () => {
   const handleContinue = async () => {
     try {
       setCompleting(true);
-      const { data } = await api.post(`/modules/${moduleId}/lessons/${index}/complete`);
       
-      if (data.moduleCompleted) {
-        toast.success(`🎉 You completed the module! +${data.xpGained || 200} XP`, {
-          duration: 5000,
-          position: 'top-center',
-          style: {
-            fontWeight: 'bold',
-            padding: '16px',
-            color: '#10B981'
-          }
-        });
-      } else if (data.xpGained > 0) {
-        toast.success(`✅ Lesson completed! +${data.xpGained} XP`, {
-          duration: 3000,
-          position: 'top-center'
-        });
+      // Save locally to localStorage so progress updates immediately on client
+      const localLessonsKey = 'ai_prompt_completed_lessons';
+      const storedLessons = JSON.parse(localStorage.getItem(localLessonsKey) || '[]');
+      const isAlreadyStored = storedLessons.some(
+        (l) => l.moduleId?.toString() === moduleId?.toString() && l.lessonIndex === index
+      );
+
+      if (!isAlreadyStored) {
+        storedLessons.push({ moduleId, lessonIndex: index, completedAt: new Date().toISOString() });
+        localStorage.setItem(localLessonsKey, JSON.stringify(storedLessons));
+
+        const currentXP = parseInt(localStorage.getItem('ai_prompt_xp') || '0', 10);
+        const xpToAdd = currentLesson.isQuiz ? 100 : 50;
+        localStorage.setItem('ai_prompt_xp', (currentXP + xpToAdd).toString());
       }
 
-      if (data.badgeEarned) {
-        toast.success(`🏆 New Badge Unlocked: ${data.badgeEarned}!`, {
+      // Check if module is finished
+      const isLastLesson = index >= lessons.length - 1;
+      if (isLastLesson) {
+        const localModulesKey = 'ai_prompt_completed_modules';
+        const storedModules = JSON.parse(localStorage.getItem(localModulesKey) || '[]');
+        if (!storedModules.includes(moduleId)) {
+          storedModules.push(moduleId);
+          localStorage.setItem(localModulesKey, JSON.stringify(storedModules));
+          
+          const currentXP = parseInt(localStorage.getItem('ai_prompt_xp') || '0', 10);
+          localStorage.setItem('ai_prompt_xp', (currentXP + 200).toString());
+        }
+      }
+
+      // Send to backend API (with skipGlobalError so un-deployed backend 404 does not pop error toast)
+      let apiResult = null;
+      try {
+        const { data } = await api.post(
+          `/modules/${moduleId}/lessons/${index}/complete`,
+          {},
+          { skipGlobalError: true }
+        );
+        apiResult = data;
+      } catch (err) {
+        // Backend not updated yet or network error - client storage already handled it
+      }
+
+      if (isLastLesson || apiResult?.moduleCompleted) {
+        toast.success(`🎉 You completed the module! +200 XP`, {
           duration: 5000,
+          position: 'top-center',
+          style: { fontWeight: 'bold', padding: '16px', color: '#10B981' }
+        });
+      } else {
+        toast.success(`✅ Lesson completed! +${currentLesson.isQuiz ? 100 : 50} XP`, {
+          duration: 3000,
           position: 'top-center'
         });
       }

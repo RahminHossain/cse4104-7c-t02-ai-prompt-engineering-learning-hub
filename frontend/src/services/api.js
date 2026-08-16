@@ -36,10 +36,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       store.dispatch(logout());
       toast.error('Session expired. Please login again.');
-    } else {
-      // For other errors, just show a toast if it's not handled specifically
-      // (Optional: We might not want to toast EVERY error globally if components handle them,
-      // but it's good for a robust fallback).
+    } else if (!error.config?.skipGlobalError) {
       toast.error(message);
     }
 

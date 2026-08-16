@@ -45,13 +45,21 @@ const ModuleDetailsPage = () => {
     ? module.lessonList 
     : [];
 
-  const userCompletedLessons = userProfile?.completedLessons?.filter(
+  const localLessons = JSON.parse(localStorage.getItem('ai_prompt_completed_lessons') || '[]');
+  const localModules = JSON.parse(localStorage.getItem('ai_prompt_completed_modules') || '[]');
+
+  const allCompletedLessons = [
+    ...(userProfile?.completedLessons || []),
+    ...localLessons
+  ];
+
+  const userCompletedLessons = allCompletedLessons.filter(
     cl => cl.moduleId?.toString() === module._id?.toString()
-  ) || [];
-  const completedLessonIndexes = new Set(userCompletedLessons.map(cl => cl.lessonIndex));
+  );
+  const completedLessonIndexes = new Set(userCompletedLessons.map(cl => Number(cl.lessonIndex)));
   const isModuleFullyCompleted = userProfile?.completedModules?.some(
     mId => mId.toString() === module._id?.toString()
-  );
+  ) || localModules.includes(module._id?.toString());
 
   const completedCount = isModuleFullyCompleted 
     ? (lessons.length || module.lessons)
