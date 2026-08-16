@@ -26,12 +26,35 @@ const ModulesPage = () => {
     fetchData();
   }, []);
 
-  const completedModulesList = userProfile?.completedModules || [];
+  const localLessons = JSON.parse(localStorage.getItem('ai_prompt_completed_lessons') || '[]');
+  const localModules = JSON.parse(localStorage.getItem('ai_prompt_completed_modules') || '[]');
+
+  const allCompletedLessons = [
+    ...(userProfile?.completedLessons || []),
+    ...localLessons
+  ];
+
+  const completedModuleIds = new Set([
+    ...(userProfile?.completedModules || []).map(m => m.toString()),
+    ...localModules.map(m => m.toString())
+  ]);
+
+  modules.forEach(mod => {
+    const total = mod.lessonList?.length || mod.lessons || 1;
+    const userLessons = allCompletedLessons.filter(
+      cl => cl.moduleId?.toString() === mod._id?.toString()
+    );
+    const uniqueIndexes = new Set(userLessons.map(l => Number(l.lessonIndex)));
+    if (uniqueIndexes.size >= total && total > 0) {
+      completedModuleIds.add(mod._id.toString());
+    }
+  });
+
   const completedCount = modules.filter(m => 
-    completedModulesList.some(cmId => cmId.toString() === m._id.toString())
+    completedModuleIds.has(m._id.toString())
   ).length;
   const totalCount = modules.length;
-  const progressPercent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+  const progressPercent = totalCount === 0 ? 0 : Math.min(100, Math.round((completedCount / totalCount) * 100));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

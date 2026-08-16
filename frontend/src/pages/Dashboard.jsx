@@ -28,10 +28,48 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  const localLessons = JSON.parse(localStorage.getItem('ai_prompt_completed_lessons') || '[]');
+  const localModules = JSON.parse(localStorage.getItem('ai_prompt_completed_modules') || '[]');
+  const localXP = parseInt(localStorage.getItem('ai_prompt_xp') || '0', 10);
+
+  const allCompletedLessons = [
+    ...(profileData?.completedLessons || []),
+    ...localLessons
+  ];
+
+  // Calculate completed modules set
+  const completedModuleIds = new Set([
+    ...(profileData?.completedModules || []).map(m => m.toString()),
+    ...localModules.map(m => m.toString())
+  ]);
+
+  // Auto-complete modules if all lessons are finished
+  modules.forEach(mod => {
+    const total = mod.lessonList?.length || mod.lessons || 1;
+    const userLessons = allCompletedLessons.filter(
+      cl => cl.moduleId?.toString() === mod._id?.toString()
+    );
+    const uniqueIndexes = new Set(userLessons.map(l => Number(l.lessonIndex)));
+    if (uniqueIndexes.size >= total && total > 0) {
+      completedModuleIds.add(mod._id.toString());
+    }
+  });
+
+  const calculatedXP = Math.max(
+    profileData?.xp || 0,
+    (allCompletedLessons.length * 50) + (completedModuleIds.size * 200),
+    localXP
+  );
+
+  const earnedBadgesList = new Set(profileData?.badges || []);
+  if (allCompletedLessons.length > 0) earnedBadgesList.add('First Steps');
+  if (completedModuleIds.size > 0) earnedBadgesList.add('Fast Learner');
+  if (completedModuleIds.size >= 3) earnedBadgesList.add('Prompt Master');
+
   const stats = [
-    { label: 'Total XP', value: profileData?.xp || '0', icon: <Zap className="text-warning w-6 h-6" />, bgColor: 'bg-yellow-50' },
-    { label: 'Modules Completed', value: profileData?.completedModules?.length || '0', icon: <BookOpen className="text-blue-500 w-6 h-6" />, bgColor: 'bg-blue-50' },
-    { label: 'Badges Earned', value: profileData?.badges?.length || '0', icon: <Award className="text-purple-500 w-6 h-6" />, bgColor: 'bg-purple-50' },
+    { label: 'Total XP', value: calculatedXP.toLocaleString(), icon: <Zap className="text-warning w-6 h-6" />, bgColor: 'bg-yellow-50' },
+    { label: 'Modules Completed', value: completedModuleIds.size.toString(), icon: <BookOpen className="text-blue-500 w-6 h-6" />, bgColor: 'bg-blue-50' },
+    { label: 'Badges Earned', value: earnedBadgesList.size.toString(), icon: <Award className="text-purple-500 w-6 h-6" />, bgColor: 'bg-purple-50' },
   ];
 
   return (
@@ -79,13 +117,12 @@ const Dashboard = () => {
                   {modules.length > 0 ? (
                     modules.slice(0, 4).map(mod => {
                       const total = mod.lessonList?.length || mod.lessons || 1;
-                      const userLessons = profileData?.completedLessons?.filter(
+                      const userLessons = allCompletedLessons.filter(
                         cl => cl.moduleId?.toString() === mod._id?.toString()
-                      ) || [];
-                      const isModCompleted = profileData?.completedModules?.some(
-                        mId => mId.toString() === mod._id?.toString()
                       );
-                      const completed = isModCompleted ? total : userLessons.length;
+                      const uniqueFinishedIndexes = new Set(userLessons.map(l => Number(l.lessonIndex)));
+                      const isModCompleted = completedModuleIds.has(mod._id?.toString()) || uniqueFinishedIndexes.size >= total;
+                      const completed = isModCompleted ? total : uniqueFinishedIndexes.size;
                       const progress = isModCompleted ? 100 : Math.min(100, Math.round((completed / total) * 100));
                       const status = isModCompleted ? 'Completed' : progress > 0 ? 'In Progress' : 'Not Started';
                       
@@ -114,14 +151,14 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-500 mb-6">Your latest achievements and actions</p>
                 
                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                  {profileData?.completedLessons?.length > 0 ? (
+                  {allCompletedLessons.length > 0 ? (
                     <>
-                      <ActivityItem text={<>Completed <strong>{profileData.completedLessons.length} lesson(s)</strong> so far</>} time="Recently" color="bg-emerald-500" />
-                      {profileData.xp > 0 && (
-                        <ActivityItem text={<>Earned <strong>{profileData.xp} XP</strong> total</>} time="Recently" color="bg-warning" />
+                      <ActivityItem text={<>Completed <strong>{allCompletedLessons.length} lesson(s)</strong></>} time="Recently" color="bg-emerald-500" />
+                      {calculatedXP > 0 && (
+                        <ActivityItem text={<>Earned <strong>{calculatedXP} XP</strong> total</>} time="Recently" color="bg-warning" />
                       )}
-                      {profileData.badges?.length > 0 && (
-                        <ActivityItem text={<>Unlocked <strong>{profileData.badges[profileData.badges.length - 1]}</strong> badge</>} time="Recently" color="bg-purple-500" />
+                      {earnedBadgesList.size > 0 && (
+                        <ActivityItem text={<>Unlocked <strong>{Array.from(earnedBadgesList).join(', ')}</strong> badge</>} time="Recently" color="bg-purple-500" />
                       )}
                     </>
                   ) : (
@@ -143,8 +180,8 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-500 mb-6">Your achievements</p>
                 
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  {profileData?.badges?.length > 0 ? (
-                    profileData.badges.map((badge, idx) => (
+                  {earnedBadgesList.size > 0 ? (
+                    Array.from(earnedBadgesList).map((badge, idx) => (
                       <Badge key={idx} icon={<Award />} title={badge} color="bg-blue-500" />
                     ))
                   ) : (
@@ -152,9 +189,9 @@ const Dashboard = () => {
                   )}
                 </div>
 
-                <button className="w-full py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">
+                <Link to="/profile" className="block text-center w-full py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">
                   View All Badges
-                </button>
+                </Link>
               </div>
 
               {/* Quick Actions */}

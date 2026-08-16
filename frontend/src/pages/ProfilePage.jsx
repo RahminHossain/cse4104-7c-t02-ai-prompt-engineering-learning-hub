@@ -23,16 +23,37 @@ const ProfilePage = () => {
   }, []);
 
   const user = profileData || authUser;
-  const level = Math.floor((user?.xp || 0) / 500) + 1;
+  
+  const localLessons = JSON.parse(localStorage.getItem('ai_prompt_completed_lessons') || '[]');
+  const localModules = JSON.parse(localStorage.getItem('ai_prompt_completed_modules') || '[]');
+  const localXP = parseInt(localStorage.getItem('ai_prompt_xp') || '0', 10);
+
+  const allCompletedLessons = [
+    ...(user?.completedLessons || []),
+    ...localLessons
+  ];
+
+  const completedModuleIds = new Set([
+    ...(user?.completedModules || []).map(m => m.toString()),
+    ...localModules.map(m => m.toString())
+  ]);
+
+  const totalXP = Math.max(
+    user?.xp || 0,
+    (allCompletedLessons.length * 50) + (completedModuleIds.size * 200),
+    localXP
+  );
+
+  const level = Math.floor(totalXP / 500) + 1;
   const joinDate = user?.createdAt 
     ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) 
     : 'Recently';
 
   const userStats = [
-    { label: 'Total XP', value: (user?.xp || 0).toLocaleString() },
-    { label: 'Modules Completed', value: user?.completedModules?.length || 0 },
-    { label: 'Lessons Finished', value: user?.completedLessons?.length || 0 },
-    { label: 'Badges Earned', value: user?.badges?.length || 0 },
+    { label: 'Total XP', value: totalXP.toLocaleString() },
+    { label: 'Modules Completed', value: completedModuleIds.size },
+    { label: 'Lessons Finished', value: allCompletedLessons.length },
+    { label: 'Badges Earned', value: (user?.badges?.length || 0) + (allCompletedLessons.length > 0 ? 1 : 0) + (completedModuleIds.size > 0 ? 1 : 0) },
     { label: 'Level', value: `Lvl ${level}` },
     { label: 'Learning Streak', value: '1 day' },
   ];
@@ -44,7 +65,12 @@ const ProfilePage = () => {
     { title: 'Challenger', date: 'Platform milestone', icon: <Trophy className="w-8 h-8" />, color: 'bg-emerald-500' },
   ];
 
-  const earnedBadges = allBadges.filter(badge => user?.badges?.includes(badge.title));
+  const earnedBadges = allBadges.filter(badge => 
+    user?.badges?.includes(badge.title) ||
+    (badge.title === 'First Steps' && allCompletedLessons.length > 0) ||
+    (badge.title === 'Fast Learner' && completedModuleIds.size > 0) ||
+    (badge.title === 'Prompt Master' && completedModuleIds.size >= 3)
+  );
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
