@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Calendar, Award, Bookmark, Settings, Zap, Trophy, PenTool } from 'lucide-react';
-import BookmarksList from '../components/BookmarksList';
+import { Calendar, Award, Settings, Zap, Trophy, PenTool } from 'lucide-react';
 import ProfileSettings from '../components/ProfileSettings';
 import api from '../services/api';
 
 const ProfilePage = () => {
   const { user: authUser } = useSelector((state) => state.auth);
   const [profileData, setProfileData] = useState(authUser);
-  const [activeTab, setActiveTab] = useState('Badges'); // 'Badges', 'Bookmarks', 'Settings'
+  const [activeTab, setActiveTab] = useState('Badges'); // 'Badges', 'Settings'
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -92,7 +91,7 @@ const ProfilePage = () => {
         
         <div className="text-center px-8 py-4 bg-gray-50 rounded-xl border border-gray-200">
           <div className="text-xl font-bold text-gray-900 bg-dark text-white px-4 py-1 rounded-md mb-2">Level {level}</div>
-          <div className="text-sm font-medium text-gray-600">{(user?.xp || 0).toLocaleString()} XP</div>
+          <div className="text-sm font-medium text-gray-600">{totalXP.toLocaleString()} XP</div>
         </div>
       </div>
 
@@ -107,8 +106,8 @@ const ProfilePage = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-gray-100 p-1 rounded-lg w-full max-w-md mb-6">
-        {['Badges', 'Bookmarks', 'Settings'].map((tab) => (
+      <div className="flex bg-gray-100 p-1 rounded-lg w-full max-w-xs mb-6">
+        {['Badges', 'Settings'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -148,7 +147,6 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {activeTab === 'Bookmarks' && <BookmarksList />}
         {activeTab === 'Settings' && <ProfileSettings />}
       </div>
     </div>
