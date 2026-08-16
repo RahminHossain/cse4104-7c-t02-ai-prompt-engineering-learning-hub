@@ -27,7 +27,12 @@ function App() {
       <Toaster position="top-right" />
       <Router>
       <Routes>
-        {/* Public Routes under MainLayout */}
+        {/* Full-Screen Protected Routes (No MainLayout Nav/Footer) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/modules/:moduleId/lessons/:lessonIndex" element={<LessonViewerPage />} />
+        </Route>
+
+        {/* Public & App Routes under MainLayout */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -43,11 +48,6 @@ function App() {
             <Route path="/modules/:id" element={<ModuleDetailsPage />} />
             <Route path="/playground" element={<Playground />} />
           </Route>
-
-        {/* Full-Screen Protected Routes (No Nav/Footer) */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/modules/:moduleId/lessons/:lessonIndex" element={<LessonViewerPage />} />
-        </Route>
         </Route>
 
         {/* Protected Routes for Admins (Using AdminLayout) */}
