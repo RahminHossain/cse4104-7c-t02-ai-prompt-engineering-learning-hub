@@ -6,20 +6,25 @@ import api from '../services/api';
 const ModuleDetailsPage = () => {
   const { id } = useParams();
   const [module, setModule] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchModule = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get(`/modules/${id}`);
-        setModule(data.module);
+        const [moduleRes, profileRes] = await Promise.all([
+          api.get(`/modules/${id}`),
+          api.get('/users/profile')
+        ]);
+        setModule(moduleRes.data.module);
+        setUserProfile(profileRes.data.user);
       } catch (error) {
-        console.error('Failed to fetch module details', error);
+        console.error('Failed to fetch module details or profile', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchModule();
+    fetchData();
   }, [id]);
 
   if (loading) {
@@ -40,9 +45,19 @@ const ModuleDetailsPage = () => {
     ? module.lessonList 
     : [];
 
-  const completedCount = lessons.filter(l => l.status === 'completed').length;
-  const totalCount = lessons.length > 0 ? lessons.length : module.lessons; // fallback to the count field
-  const progressPercent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+  const userCompletedLessons = userProfile?.completedLessons?.filter(
+    cl => cl.moduleId?.toString() === module._id?.toString()
+  ) || [];
+  const completedLessonIndexes = new Set(userCompletedLessons.map(cl => cl.lessonIndex));
+  const isModuleFullyCompleted = userProfile?.completedModules?.some(
+    mId => mId.toString() === module._id?.toString()
+  );
+
+  const completedCount = isModuleFullyCompleted 
+    ? (lessons.length || module.lessons)
+    : completedLessonIndexes.size;
+  const totalCount = lessons.length > 0 ? lessons.length : (module.lessons || 1);
+  const progressPercent = totalCount === 0 ? 0 : Math.min(100, Math.round((completedCount / totalCount) * 100));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -91,32 +106,35 @@ const ModuleDetailsPage = () => {
               {lessons.length === 0 ? (
                 <p className="text-gray-500 py-4 text-center border border-dashed rounded">This module currently has no detailed lessons added to the database.</p>
               ) : (
-                lessons.map((lesson, index) => (
-                  <div key={lesson._id || index} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start gap-4">
-                      {lesson.status === 'completed' ? (
-                        <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 shrink-0 mt-0.5" />
-                      )}
-                      <div>
-                        <h3 className={`font-semibold ${lesson.status === 'completed' ? 'text-gray-900' : 'text-gray-700'}`}>
-                          {lesson.title}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-1">{lesson.duration} &bull; {lesson.isQuiz ? 'Quiz' : 'Reading'}</p>
+                lessons.map((lesson, index) => {
+                  const isLessonCompleted = completedLessonIndexes.has(index) || isModuleFullyCompleted;
+                  return (
+                    <div key={lesson._id || index} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start gap-4">
+                        {isLessonCompleted ? (
+                          <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full border-2 border-gray-300 shrink-0 mt-0.5" />
+                        )}
+                        <div>
+                          <h3 className={`font-semibold ${isLessonCompleted ? 'text-gray-900' : 'text-gray-700'}`}>
+                            {lesson.title}
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-1">{lesson.duration} &bull; {lesson.isQuiz ? 'Quiz' : 'Reading'}</p>
+                        </div>
                       </div>
+                      {isLessonCompleted ? (
+                        <Link to={`/modules/${module._id}/lessons/${index}`} className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
+                          Review
+                        </Link>
+                      ) : (
+                        <Link to={`/modules/${module._id}/lessons/${index}`} className="px-4 py-1.5 text-sm font-medium text-white bg-dark rounded hover:bg-gray-800 transition-colors shadow-sm">
+                          Start
+                        </Link>
+                      )}
                     </div>
-                    {lesson.status === 'completed' ? (
-                      <Link to={`/modules/${module._id}/lessons/${index}`} className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-                        Review
-                      </Link>
-                    ) : (
-                      <Link to={`/modules/${module._id}/lessons/${index}`} className="px-4 py-1.5 text-sm font-medium text-white bg-dark rounded hover:bg-gray-800 transition-colors shadow-sm">
-                        Start
-                      </Link>
-                    )}
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>

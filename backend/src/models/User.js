@@ -51,6 +51,21 @@ const userSchema = new mongoose.Schema(
       ref: 'Module',
       default: [],
     },
+    completedLessons: [
+      {
+        moduleId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Module',
+        },
+        lessonIndex: {
+          type: Number,
+        },
+        completedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

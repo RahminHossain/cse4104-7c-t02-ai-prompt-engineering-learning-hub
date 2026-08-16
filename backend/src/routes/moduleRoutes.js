@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, param } = require('express-validator');
-const { getAllModules, getModuleById, createModule, updateModule, deleteModule } = require('../controllers/moduleController');
+const { getAllModules, getModuleById, createModule, updateModule, deleteModule, completeLesson } = require('../controllers/moduleController');
 const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
 const validateRequest = require('../middleware/validateRequest');
 
@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/', authenticate, getAllModules);
 router.get('/:id', authenticate, [param('id').isMongoId()], validateRequest, getModuleById);
+router.post('/:id/lessons/:lessonIndex/complete', authenticate, [param('id').isMongoId()], validateRequest, completeLesson);
 
 router.post(
   '/',

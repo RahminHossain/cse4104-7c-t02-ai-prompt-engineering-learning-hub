@@ -78,11 +78,16 @@ const Dashboard = () => {
                 <div className="space-y-6">
                   {modules.length > 0 ? (
                     modules.slice(0, 4).map(mod => {
-                      const lessons = mod.lessonList || [];
-                      const total = lessons.length;
-                      const completed = lessons.filter(l => l.status === 'completed').length;
-                      const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
-                      const status = progress === 100 ? 'Completed' : progress > 0 ? 'In Progress' : 'Not Started';
+                      const total = mod.lessonList?.length || mod.lessons || 1;
+                      const userLessons = profileData?.completedLessons?.filter(
+                        cl => cl.moduleId?.toString() === mod._id?.toString()
+                      ) || [];
+                      const isModCompleted = profileData?.completedModules?.some(
+                        mId => mId.toString() === mod._id?.toString()
+                      );
+                      const completed = isModCompleted ? total : userLessons.length;
+                      const progress = isModCompleted ? 100 : Math.min(100, Math.round((completed / total) * 100));
+                      const status = isModCompleted ? 'Completed' : progress > 0 ? 'In Progress' : 'Not Started';
                       
                       return (
                         <ProgressItem 
@@ -109,10 +114,22 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-500 mb-6">Your latest achievements and actions</p>
                 
                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                  <ActivityItem text={<>Completed <strong>Zero-Shot Prompting</strong> module</>} time="2 hours ago" color="bg-blue-500" />
-                  <ActivityItem text={<>Earned <strong>Quick Learner</strong> badge</>} time="5 hours ago" color="bg-warning" />
-                  <ActivityItem text={<>Practiced in <strong>AI Playground</strong></>} time="1 day ago" color="bg-emerald-500" />
-                  <ActivityItem text={<>Started <strong>Chain-of-Thought</strong> technique</>} time="2 days ago" color="bg-purple-500" />
+                  {profileData?.completedLessons?.length > 0 ? (
+                    <>
+                      <ActivityItem text={<>Completed <strong>{profileData.completedLessons.length} lesson(s)</strong> so far</>} time="Recently" color="bg-emerald-500" />
+                      {profileData.xp > 0 && (
+                        <ActivityItem text={<>Earned <strong>{profileData.xp} XP</strong> total</>} time="Recently" color="bg-warning" />
+                      )}
+                      {profileData.badges?.length > 0 && (
+                        <ActivityItem text={<>Unlocked <strong>{profileData.badges[profileData.badges.length - 1]}</strong> badge</>} time="Recently" color="bg-purple-500" />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <ActivityItem text={<>Account created & Ready to start learning</>} time="Today" color="bg-blue-500" />
+                      <ActivityItem text={<>Started your Prompt Engineering journey</>} time="Welcome!" color="bg-emerald-500" />
+                    </>
+                  )}
                 </div>
               </div>
             </div>

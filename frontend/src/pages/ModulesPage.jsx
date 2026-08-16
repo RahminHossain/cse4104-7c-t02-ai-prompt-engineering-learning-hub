@@ -5,23 +5,31 @@ import api from '../services/api';
 
 const ModulesPage = () => {
   const [modules, setModules] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchModules = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get('/modules');
-        setModules(data.modules);
+        const [modulesRes, profileRes] = await Promise.all([
+          api.get('/modules'),
+          api.get('/users/profile')
+        ]);
+        setModules(modulesRes.data.modules || []);
+        setUserProfile(profileRes.data.user || null);
       } catch (error) {
         console.error('Failed to load modules', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchModules();
+    fetchData();
   }, []);
 
-  const completedCount = modules.filter(m => m.status === 'Completed').length;
+  const completedModulesList = userProfile?.completedModules || [];
+  const completedCount = modules.filter(m => 
+    completedModulesList.some(cmId => cmId.toString() === m._id.toString())
+  ).length;
   const totalCount = modules.length;
   const progressPercent = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
@@ -55,7 +63,7 @@ const ModulesPage = () => {
           {/* Modules Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {modules.map((mod) => (
-              <ModuleCard key={mod._id} module={mod} />
+              <ModuleCard key={mod._id} module={mod} userProfile={userProfile} />
             ))}
             {modules.length === 0 && (
               <p className="text-gray-500 col-span-2 text-center py-4">No modules available at the moment.</p>
@@ -67,12 +75,24 @@ const ModulesPage = () => {
   );
 };
 
-const ModuleCard = ({ module }) => {
-  // Using status from DB, assuming 'Draft' means locked/hidden and 'Published' means accessible.
-  // For user progress, we'd normally check user.completedModules.
+const ModuleCard = ({ module, userProfile }) => {
   const isLocked = module.status === 'Draft';
-  const isCompleted = false; // We'd check if module._id is in user.completedModules
-  const inProgress = false; // Add real tracking logic here
+  
+  const isCompleted = userProfile?.completedModules?.some(
+    mId => mId.toString() === module._id.toString()
+  );
+
+  const userLessons = userProfile?.completedLessons?.filter(
+    cl => cl.moduleId?.toString() === module._id.toString()
+  ) || [];
+  
+  const completedLessonsCount = isCompleted 
+    ? (module.lessonList?.length || module.lessons)
+    : userLessons.length;
+    
+  const totalLessons = module.lessonList?.length || module.lessons || 1;
+  const progressPercent = isCompleted ? 100 : Math.min(100, Math.round((completedLessonsCount / totalLessons) * 100));
+  const inProgress = !isCompleted && completedLessonsCount > 0;
 
   return (
     <div className={`bg-white rounded-xl border p-6 transition-all ${
@@ -96,17 +116,18 @@ const ModuleCard = ({ module }) => {
           {module.level}
         </span>
         <span className="text-xs text-gray-500 flex items-center gap-1">
-          {module.lessons} lessons &bull; {module.time}
+          {totalLessons} lessons &bull; {module.time}
         </span>
       </div>
 
       {!isLocked && (
         <div className="mb-4">
           <div className="flex justify-between text-xs text-gray-500 mb-1">
-            <span>{isCompleted ? 100 : 0}% Complete</span>
+            <span>{progressPercent}% Complete</span>
+            <span>{completedLessonsCount} / {totalLessons} lessons</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div className={`h-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : 'bg-primary'}`} style={{ width: `${isCompleted ? 100 : 0}%` }}></div>
+            <div className={`h-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : 'bg-primary'}`} style={{ width: `${progressPercent}%` }}></div>
           </div>
         </div>
       )}
@@ -121,7 +142,7 @@ const ModuleCard = ({ module }) => {
         </button>
       ) : (
         <Link to={`/modules/${module._id}`} className="block w-full text-center py-2 bg-dark text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium flex items-center justify-center gap-2">
-          <PlayCircle className="w-4 h-4" /> Start Learning
+          <PlayCircle className="w-4 h-4" /> {inProgress ? 'Continue Learning' : 'Start Learning'}
         </Link>
       )}
     </div>

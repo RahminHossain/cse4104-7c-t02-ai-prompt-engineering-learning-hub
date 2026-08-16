@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Calendar, Award, Bookmark, Settings, Zap, Trophy, PenTool } from 'lucide-react';
 import BookmarksList from '../components/BookmarksList';
 import ProfileSettings from '../components/ProfileSettings';
+import api from '../services/api';
 
 const ProfilePage = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user: authUser } = useSelector((state) => state.auth);
+  const [profileData, setProfileData] = useState(authUser);
   const [activeTab, setActiveTab] = useState('Badges'); // 'Badges', 'Bookmarks', 'Settings'
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await api.get('/users/profile');
+        setProfileData(data.user);
+      } catch (error) {
+        console.error('Failed to load profile', error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const user = profileData || authUser;
   const level = Math.floor((user?.xp || 0) / 500) + 1;
   const joinDate = user?.createdAt 
     ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) 
@@ -16,17 +31,17 @@ const ProfilePage = () => {
   const userStats = [
     { label: 'Total XP', value: (user?.xp || 0).toLocaleString() },
     { label: 'Modules Completed', value: user?.completedModules?.length || 0 },
-    { label: 'Challenges Won', value: '0' },
-    { label: 'Prompts Published', value: '0' },
-    { label: 'Average Score', value: '0%' },
+    { label: 'Lessons Finished', value: user?.completedLessons?.length || 0 },
+    { label: 'Badges Earned', value: user?.badges?.length || 0 },
+    { label: 'Level', value: `Lvl ${level}` },
     { label: 'Learning Streak', value: '1 day' },
   ];
 
   const allBadges = [
-    { title: 'First Steps', date: 'Earned recently', icon: <Award className="w-8 h-8" />, color: 'bg-blue-500' },
-    { title: 'Fast Learner', date: 'Earned recently', icon: <Zap className="w-8 h-8" />, color: 'bg-warning' },
-    { title: 'Challenger', date: 'Earned recently', icon: <Trophy className="w-8 h-8" />, color: 'bg-emerald-500' },
-    { title: 'Prompt Master', date: 'Earned recently', icon: <PenTool className="w-8 h-8" />, color: 'bg-purple-500' },
+    { title: 'First Steps', date: 'Earned on first lesson', icon: <Award className="w-8 h-8" />, color: 'bg-blue-500' },
+    { title: 'Fast Learner', date: 'Earned on module completion', icon: <Zap className="w-8 h-8" />, color: 'bg-warning' },
+    { title: 'Prompt Master', date: 'Earned on 3+ modules', icon: <PenTool className="w-8 h-8" />, color: 'bg-purple-500' },
+    { title: 'Challenger', date: 'Platform milestone', icon: <Trophy className="w-8 h-8" />, color: 'bg-emerald-500' },
   ];
 
   const earnedBadges = allBadges.filter(badge => user?.badges?.includes(badge.title));

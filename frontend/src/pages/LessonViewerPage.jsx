@@ -60,22 +60,52 @@ const LessonViewerPage = () => {
     return null;
   }
 
-  const handleContinue = () => {
-    if (index < lessons.length - 1) {
-      // Go to next lesson
-      navigate(`/modules/${moduleId}/lessons/${index + 1}`);
-    } else {
-      // Finished the module
-      toast.success('🎉 You completed the module!', {
-        duration: 4000,
-        position: 'top-center',
-        style: {
-          fontWeight: 'bold',
-          padding: '16px',
-          color: '#10B981'
-        }
-      });
-      navigate(`/modules/${moduleId}`);
+  const [completing, setCompleting] = useState(false);
+
+  const handleContinue = async () => {
+    try {
+      setCompleting(true);
+      const { data } = await api.post(`/modules/${moduleId}/lessons/${index}/complete`);
+      
+      if (data.moduleCompleted) {
+        toast.success(`🎉 You completed the module! +${data.xpGained || 200} XP`, {
+          duration: 5000,
+          position: 'top-center',
+          style: {
+            fontWeight: 'bold',
+            padding: '16px',
+            color: '#10B981'
+          }
+        });
+      } else if (data.xpGained > 0) {
+        toast.success(`✅ Lesson completed! +${data.xpGained} XP`, {
+          duration: 3000,
+          position: 'top-center'
+        });
+      }
+
+      if (data.badgeEarned) {
+        toast.success(`🏆 New Badge Unlocked: ${data.badgeEarned}!`, {
+          duration: 5000,
+          position: 'top-center'
+        });
+      }
+
+      if (index < lessons.length - 1) {
+        navigate(`/modules/${moduleId}/lessons/${index + 1}`);
+      } else {
+        navigate(`/modules/${moduleId}`);
+      }
+    } catch (error) {
+      console.error('Error completing lesson', error);
+      // Fallback navigation in case of error
+      if (index < lessons.length - 1) {
+        navigate(`/modules/${moduleId}/lessons/${index + 1}`);
+      } else {
+        navigate(`/modules/${moduleId}`);
+      }
+    } finally {
+      setCompleting(false);
     }
   };
 
