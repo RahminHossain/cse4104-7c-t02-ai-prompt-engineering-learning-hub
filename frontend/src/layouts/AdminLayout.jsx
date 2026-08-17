@@ -38,7 +38,7 @@ const AdminLayout = () => {
             return (
               <Link 
                 key={idx}
-                to={/admin?tab=${item.tab}} 
+                to={`/admin?tab=${item.tab}`} 
                 className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                   isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
                 }`}
