@@ -36,8 +36,7 @@ const AdminPanel = () => {
   const metricsDisplay = [
     { label: 'Total Users', value: metrics.totalUsers, icon: <Users className="text-blue-500 w-6 h-6" />, color: 'bg-blue-100', trend: '+12%', trendColor: 'text-emerald-500 bg-emerald-50' },
     { label: 'Active Modules', value: metrics.activeModules, icon: <BookOpen className="text-emerald-500 w-6 h-6" />, color: 'bg-emerald-100', trend: '+2', trendColor: 'text-emerald-500 bg-emerald-50' },
-    { label: 'Challenges Created', value: metrics.challengesCreated, icon: <Trophy className="text-purple-500 w-6 h-6" />, color: 'bg-purple-100', trend: '+5', trendColor: 'text-emerald-500 bg-emerald-50' },
-    { label: 'Marketplace Items', value: metrics.marketplaceItems, icon: <TrendingUp className="text-orange-500 w-6 h-6" />, color: 'bg-orange-100', trend: '+18', trendColor: 'text-emerald-500 bg-emerald-50' },
+    
   ];
 
   return (
@@ -67,7 +66,7 @@ const AdminPanel = () => {
 
       {/* Tabs */}
       <div className="flex bg-gray-100 p-1 rounded-lg w-full max-w-[450px] mb-6 overflow-x-auto">
-        {['Users', 'Modules', 'Marketplace', 'Analytics', 'Settings'].map((tab) => (
+        {['Users', 'Modules', 'Analytics', 'Settings'].map((tab) => (
           <button
             key={tab}
             onClick={() => setSearchParams({ tab })}
@@ -84,7 +83,7 @@ const AdminPanel = () => {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         {activeTab === 'Users' && <UserManagement />}
         {activeTab === 'Modules' && <ModulesManagement />}
-        {activeTab === 'Marketplace' && <MarketplaceManagement />}
+       
         {activeTab === 'Analytics' && <PlatformAnalytics />}
         {activeTab === 'Settings' && <SettingsManagement />}
       </div>
