@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { BrainCircuit, LogOut, LayoutDashboard, BookOpen, BarChart3, Settings, ArrowLeft } from 'lucide-react';
+import { BrainCircuit, LogOut, LayoutDashboard, BookOpen,BarChart3, Settings, ArrowLeft } from 'lucide-react';
 
 const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
