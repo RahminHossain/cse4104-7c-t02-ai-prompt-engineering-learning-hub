@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { BrainCircuit, LogOut, LayoutDashboard, BookOpen, ShoppingBag, BarChart3, Settings, ArrowLeft } from 'lucide-react';
+import { BrainCircuit, LogOut, LayoutDashboard, BookOpen, BarChart3, Settings, ArrowLeft } from 'lucide-react';
 
 const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
@@ -19,7 +19,6 @@ const AdminLayout = () => {
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, tab: 'Users' },
     { name: 'Learning Modules', icon: <BookOpen className="w-5 h-5" />, tab: 'Modules' },
-    { name: 'Marketplace', icon: <ShoppingBag className="w-5 h-5" />, tab: 'Marketplace' },
     { name: 'Platform Analytics', icon: <BarChart3 className="w-5 h-5" />, tab: 'Analytics' },
     { name: 'Settings', icon: <Settings className="w-5 h-5" />, tab: 'Settings' },
   ];
@@ -39,7 +38,7 @@ const AdminLayout = () => {
             return (
               <Link 
                 key={idx}
-                to={`/admin?tab=${item.tab}`} 
+                to={/admin?tab=${item.tab}} 
                 className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                   isActive ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
                 }`}
